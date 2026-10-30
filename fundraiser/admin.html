@@ -1,0 +1,632 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Bright Light Church | Private Donation Ledger</title>
+<script src="config.js"></script>
+
+<style>
+:root {
+  --blue:#0b2854;
+  --gold:#dcb46a;
+  --bg:#f4f6fa;
+  --ink:#193252;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;font:14px/1.5 system-ui,Segoe UI,Arial,sans-serif;
+  color:var(--ink);background:var(--bg);
+}
+header {
+  padding:24px;
+  background:linear-gradient(100deg,#071a3b,#17447e);
+  color:#fff;border-bottom:5px solid var(--gold);
+}
+.wrap {width:min(1200px,calc(100% - 28px));margin:auto}
+h1 {font:400 29px Georgia,serif;margin:0 0 7px}
+header p {margin:0;color:#cddced}
+h2 {
+  font:400 25px Georgia,serif;
+  color:var(--blue);margin:0 0 15px;
+}
+.card {
+  background:white;border:1px solid #e0e6ee;
+  border-radius:12px;padding:22px;
+  margin:22px 0;box-shadow:0 5px 18px #0b28540a;
+}
+label {
+  font-size:12px;font-weight:750;
+  display:block;margin:12px 0 4px;
+}
+input,select,textarea {
+  width:100%;border:1px solid #bdcbda;
+  border-radius:8px;padding:11px;
+  background:#fff;font:inherit;
+}
+button {
+  font:inherit;cursor:pointer;border:0;
+  border-radius:8px;padding:11px 18px;
+  font-weight:750;background:#123a75;color:white;
+}
+button:disabled {opacity:.5;cursor:wait}
+.secondary {
+  border:1px solid #b7c7d9;
+  background:#fff;color:#19406d;
+}
+.row {
+  display:flex;flex-wrap:wrap;
+  gap:12px;align-items:center;
+}
+.row>* {flex:1}
+.row button {flex:0 0 auto}
+.muted {color:#64758a;font-size:12px}
+#message {
+  color:#9a2935;font-weight:700;
+  min-height:18px;
+}
+.hidden {display:none!important}
+.stats {
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:12px;margin:17px 0;
+}
+.stat {
+  background:#fff;border:1px solid #dee5ee;
+  border-radius:10px;padding:15px;
+}
+.stat strong {
+  display:block;font-size:26px;color:#10356b;
+}
+.stat small {color:#64768b}
+.tablewrap {overflow:auto}
+table {
+  width:100%;border-collapse:collapse;
+  font-size:12px;min-width:900px;
+}
+th,td {
+  border-bottom:1px solid #e8edf3;
+  text-align:left;padding:10px;vertical-align:top;
+}
+th {
+  color:#526780;text-transform:uppercase;
+  font-size:10px;letter-spacing:1px;
+}
+tr:hover {background:#f7f9fc}
+.tag {
+  border-radius:12px;padding:4px 8px;
+  display:inline-block;background:#edf2f9;
+  white-space:nowrap;
+}
+.tag.verified {
+  background:#e3f4e6;color:#146538;
+}
+.tag.amount_mismatch {
+  background:#fff2df;color:#895512;
+}
+.tag.not_found {
+  background:#fce9e8;color:#952d2b;
+}
+footer {
+  color:#697b8e;font-size:12px;
+  text-align:center;padding:20px;
+}
+@media(max-width:700px) {
+  .stats {grid-template-columns:repeat(2,1fr)}
+  .row {display:block}
+  .row>* {width:100%;margin-bottom:10px}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="wrap">
+    <h1>Bright Light Church · Donation Ledger</h1>
+    <p>
+      Private administrator view · Reconcile pledges
+      against actual Givelify transactions
+    </p>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section id="loginCard" class="card" style="max-width:560px">
+  <h2>Administrator Sign In</h2>
+  <p class="muted">
+    Only church staff specifically authorized in Supabase
+    can view registration records.
+  </p>
+
+  <form id="loginForm">
+    <label for="adminEmail">Admin email</label>
+    <input id="adminEmail" type="email"
+           required autocomplete="username">
+
+    <label for="adminPassword">Password</label>
+    <input id="adminPassword" type="password"
+           required autocomplete="current-password">
+
+    <button style="margin-top:16px" type="submit">
+      Sign In
+    </button>
+  </form>
+</section>
+
+<div id="dashboard" class="hidden">
+  <div class="row" style="margin-top:16px">
+    <div>
+      <strong id="signedInAs"></strong>
+      <div class="muted">
+        The pledged amount is not a confirmed payment.
+      </div>
+    </div>
+    <button class="secondary" id="refresh" type="button">
+      Refresh Records
+    </button>
+    <button class="secondary" id="export" type="button">
+      Export CSV
+    </button>
+    <button class="secondary" id="logout" type="button">
+      Sign Out
+    </button>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <small>Registrations</small>
+      <strong id="countAll">0</strong>
+    </div>
+    <div class="stat">
+      <small>Pending</small>
+      <strong id="countPending">0</strong>
+    </div>
+    <div class="stat">
+      <small>Verified Matches</small>
+      <strong id="countVerified">0</strong>
+    </div>
+    <div class="stat">
+      <small>Verified Giving ($)</small>
+      <strong id="sumPaid">0.00</strong>
+    </div>
+  </div>
+
+  <section class="card">
+    <h2>Registered Participants</h2>
+
+    <div class="row">
+      <input id="search" type="search"
+             placeholder="Search name, email, reference or transaction ID"
+             aria-label="Search participants">
+
+      <select id="filter" aria-label="Filter by status">
+        <option value="all">All statuses</option>
+        <option value="pending">Pending</option>
+        <option value="verified">Verified</option>
+        <option value="amount_mismatch">Amount Mismatch</option>
+        <option value="not_found">Not Found</option>
+      </select>
+    </div>
+
+    <p class="muted">
+      Compare each reference code and pledge with the Givelify
+      transaction records. The Submit button does not prove payment.
+    </p>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Created (CT)</th>
+            <th>Participant</th>
+            <th>Contact</th>
+            <th>Reference</th>
+            <th>Pledged</th>
+            <th>Givelify Actual</th>
+            <th>Status</th>
+            <th>Review</th>
+          </tr>
+        </thead>
+        <tbody id="records"></tbody>
+      </table>
+    </div>
+    <p id="recordCount" class="muted"></p>
+  </section>
+
+  <section id="reviewCard" class="card hidden">
+    <h2>Reconcile Givelify Transaction</h2>
+
+    <p id="reviewPerson"></p>
+    <p id="reviewReference" style="font-weight:800"></p>
+
+    <form id="reviewForm">
+      <label for="actualAmount">
+        Actual Givelify amount ($)
+      </label>
+      <input id="actualAmount" type="number"
+             min="0.01" max="100000"
+             step="0.01" required>
+
+      <label for="transactionId">
+        Givelify transaction ID / record identifier
+      </label>
+      <input id="transactionId"
+             maxlength="180" required>
+
+      <label for="adminNotes">
+        Administrator notes (optional)
+      </label>
+      <textarea id="adminNotes"
+                rows="3" maxlength="500"></textarea>
+
+      <div class="row" style="margin-top:17px">
+        <button type="submit">Save Reconciliation</button>
+        <button id="notFound" type="button" class="secondary">
+          Mark Not Found
+        </button>
+        <button id="cancel" type="button" class="secondary">
+          Cancel
+        </button>
+      </div>
+    </form>
+    <p class="muted">
+      Verified means the recorded actual amount matches the pledge.
+      Staff should also check the name, reference, and transaction ID
+      against the real Givelify record.
+    </p>
+  </section>
+</div>
+
+<p role="status" id="message"></p>
+
+</main>
+
+<footer>
+  Private Bright Light Church records.
+  Do not share exports publicly. © 2026
+</footer>
+
+<script type="module">
+import {createClient} from
+  'https://esm.sh/@supabase/supabase-js@2';
+
+const $ = id => document.getElementById(id);
+
+const ready =
+  window.BLC_SUPABASE_URL &&
+  window.BLC_SUPABASE_ANON_KEY &&
+  !window.BLC_SUPABASE_URL.includes('PASTE_') &&
+  !window.BLC_SUPABASE_ANON_KEY.includes('PASTE_');
+
+const supabase = ready
+  ? createClient(
+      window.BLC_SUPABASE_URL,
+      window.BLC_SUPABASE_ANON_KEY
+    )
+  : null;
+
+let rows = [];
+let current = null;
+
+const money = v =>
+  v === null || v === undefined
+    ? '—'
+    : '$'+Number(v).toFixed(2);
+
+const statusMsg = s => $('message').textContent = s;
+
+function safeCsv(value) {
+  let str = String(value ?? '');
+  if(/^[\s]*[=+@\-\t\r]/.test(str)) str = "'"+str;
+  return '"'+str.replace(/"/g,'""')+'"';
+}
+
+async function load() {
+  if(!supabase) return;
+  statusMsg('Loading registered participants...');
+
+  try {
+    const all = [];
+
+    for(let page=0;page<40;page++) {
+      const start = page*500;
+      const {data,error} = await supabase
+        .rpc('blc_admin_list_pledges')
+        .range(start,start+499);
+
+      if(error) throw error;
+      all.push(...(data || []));
+
+      if(!data || data.length<500) break;
+
+      if(page === 39) {
+        statusMsg('Only the first 20,000 records were loaded.');
+      }
+    }
+
+    rows = all;
+    $('dashboard').classList.remove('hidden');
+    $('loginCard').classList.add('hidden');
+    render();
+
+    if(rows.length < 20000) statusMsg('');
+
+  } catch(error) {
+    statusMsg(
+      error.message ||
+      'Unable to load records. Check administrator authorization.'
+    );
+  }
+}
+
+function render() {
+  $('countAll').textContent = rows.length;
+  $('countPending').textContent =
+    rows.filter(x=>x.reconciliation_status==='pending').length;
+
+  $('countVerified').textContent =
+    rows.filter(x=>x.reconciliation_status==='verified').length;
+
+  $('sumPaid').textContent =
+    rows.filter(x=>x.reconciliation_status==='verified')
+      .reduce((sum,x)=>sum+Number(x.paid_amount||0),0)
+      .toFixed(2);
+
+  const query = $('search').value.toLowerCase().trim();
+  const filter = $('filter').value;
+
+  const subset = rows.filter(x =>
+    (filter === 'all' ||
+     x.reconciliation_status === filter) &&
+    [
+      x.full_name,
+      x.phone,
+      x.email,
+      x.reference_code,
+      x.givelify_transaction_id
+    ].some(y =>
+      String(y ?? '').toLowerCase().includes(query)
+    )
+  );
+
+  const tbody = $('records');
+  tbody.replaceChildren();
+
+  for(const x of subset) {
+    const tr = document.createElement('tr');
+
+    const date = new Date(x.created_at).toLocaleString(
+      'en-US',{
+        timeZone:'America/Chicago',
+        dateStyle:'medium',
+        timeStyle:'short'
+      }
+    );
+
+    const cells = [
+      date,
+      x.full_name,
+      `${x.email}\n${x.phone}`,
+      x.reference_code,
+      money(x.pledged_amount),
+      money(x.paid_amount)
+    ];
+
+    for(const value of cells) {
+      const td = document.createElement('td');
+      td.textContent = value;
+      td.style.whiteSpace = 'pre-line';
+      tr.append(td);
+    }
+
+    const statusTd = document.createElement('td');
+    const badge = document.createElement('span');
+
+    badge.className = 'tag '+x.reconciliation_status;
+    badge.textContent =
+      x.reconciliation_status.replace(/_/g,' ');
+
+    statusTd.append(badge);
+    tr.append(statusTd);
+
+    const act = document.createElement('td');
+    const button = document.createElement('button');
+
+    button.className = 'secondary';
+    button.textContent = 'Review';
+    button.addEventListener('click',()=>review(x.id));
+
+    act.append(button);
+    tr.append(act);
+    tbody.append(tr);
+  }
+
+  $('recordCount').textContent =
+    `Showing ${subset.length} of ${rows.length} saved registrations`;
+}
+
+function review(id) {
+  current = rows.find(x=>x.id===id);
+  if(!current) return;
+
+  $('reviewCard').classList.remove('hidden');
+
+  $('reviewPerson').textContent =
+    `${current.full_name} — pledged ${money(current.pledged_amount)}`;
+
+  $('reviewReference').textContent =
+    `Donation note/reference: ${current.reference_code}`;
+
+  $('actualAmount').value = current.paid_amount ?? '';
+  $('transactionId').value =
+    current.givelify_transaction_id ?? '';
+  $('adminNotes').value = current.admin_notes ?? '';
+
+  $('reviewCard').scrollIntoView({
+    behavior:'smooth',block:'start'
+  });
+}
+
+$('loginForm').addEventListener('submit',async e => {
+  e.preventDefault();
+
+  if(!supabase) {
+    statusMsg('Configure config.js first.');
+    return;
+  }
+
+  statusMsg('Signing in...');
+
+  const {error} = await supabase.auth.signInWithPassword({
+    email:$('adminEmail').value,
+    password:$('adminPassword').value
+  });
+
+  if(error) {
+    statusMsg(error.message);
+    return;
+  }
+
+  const {data} = await supabase.auth.getUser();
+
+  $('signedInAs').textContent =
+    data.user?.email || 'Authorized admin';
+
+  await load();
+});
+
+$('logout').addEventListener('click',async () => {
+  await supabase?.auth.signOut();
+  rows = [];
+  current = null;
+
+  $('dashboard').classList.add('hidden');
+  $('loginCard').classList.remove('hidden');
+  $('reviewCard').classList.add('hidden');
+
+  statusMsg('Signed out.');
+});
+
+$('refresh').addEventListener('click',load);
+$('search').addEventListener('input',render);
+$('filter').addEventListener('change',render);
+
+$('cancel').addEventListener('click',() =>
+  $('reviewCard').classList.add('hidden')
+);
+
+$('reviewForm').addEventListener('submit',async e => {
+  e.preventDefault();
+  if(!current) return;
+
+  const actual = Number($('actualAmount').value);
+
+  if(!Number.isFinite(actual) || actual<=0) {
+    statusMsg('Enter a valid actual amount.');
+    return;
+  }
+
+  const txn = $('transactionId').value.trim();
+
+  if(txn.length<3) {
+    statusMsg('Enter a Givelify transaction identifier.');
+    return;
+  }
+
+  const {data,error} = await supabase.rpc(
+    'blc_admin_reconcile_pledge',{
+      p_id:current.id,
+      p_paid_amount:actual,
+      p_givelify_transaction_id:txn,
+      p_admin_notes:$('adminNotes').value.trim()
+    }
+  );
+
+  if(error) {
+    statusMsg('Could not reconcile: '+error.message);
+    return;
+  }
+
+  $('reviewCard').classList.add('hidden');
+  await load();
+  statusMsg(`Record saved: ${data}.`);
+});
+
+$('notFound').addEventListener('click',async () => {
+  if(!current) return;
+
+  if(!confirm(
+    'Mark this pledge as not found in Givelify records?'
+  )) return;
+
+  const {error} = await supabase.rpc(
+    'blc_admin_mark_not_found',{
+      p_id:current.id,
+      p_admin_notes:$('adminNotes').value.trim()
+    }
+  );
+
+  if(error) {
+    statusMsg(error.message);
+    return;
+  }
+
+  $('reviewCard').classList.add('hidden');
+  await load();
+  statusMsg('Marked not found.');
+});
+
+$('export').addEventListener('click',() => {
+  const keys = [
+    'created_at',
+    'full_name',
+    'phone',
+    'email',
+    'reference_code',
+    'pledged_amount',
+    'reconciliation_status',
+    'paid_amount',
+    'givelify_transaction_id',
+    'reconciled_at',
+    'admin_notes'
+  ];
+
+  const csv = [
+    keys.map(safeCsv).join(','),
+    ...rows.map(x =>
+      keys.map(k=>safeCsv(x[k])).join(',')
+    )
+  ].join('\r\n');
+
+  const url = URL.createObjectURL(
+    new Blob([csv],{
+      type:'text/csv;charset=utf-8;'
+    })
+  );
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'bright-light-church-donation-ledger.csv';
+  link.click();
+
+  setTimeout(()=>URL.revokeObjectURL(url),3000);
+});
+
+if(!ready) {
+  statusMsg(
+    'Setup required: add your Supabase settings in config.js.'
+  );
+} else {
+  supabase.auth.getUser().then(async ({data}) => {
+    if(data?.user) {
+      $('signedInAs').textContent = data.user.email;
+      await load();
+    }
+  });
+}
+</script>
+
+</body>
+</html>

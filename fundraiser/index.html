@@ -3,769 +3,680 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Bright Light Church 2026 Annual Fundraiser—five wonderful prizes, optional $10 donation, and a November 15 drawing.">
-<meta name="theme-color" content="#081d43">
-<title>Bright Light Church | 2026 Annual Fundraiser</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#081e43">
+<title>Bright Light Church | Annual Fundraiser 2026</title>
+<script src="config.js"></script>
+
 <style>
 :root {
-  --navy:#091e44;
-  --blue:#13376f;
-  --gold:#e9c677;
-  --white:#fff;
-  --ink:#173052;
-  --muted:#62718a;
+  --navy:#081e43;
+  --blue:#174077;
+  --gold:#e7bf6b;
+  --ink:#142d50;
+  --light:#f7f7f5;
 }
 * {box-sizing:border-box}
 html {scroll-behavior:smooth}
 body {
-  margin:0;
-  background:#f8f7f4;
-  color:var(--ink);
-  font:15px/1.6 system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+  margin:0;background:var(--light);color:var(--ink);
+  font:15px/1.6 system-ui,Arial,sans-serif;
 }
-a {text-decoration:none;color:inherit}
-button,input {font:inherit}
+a {color:inherit;text-decoration:none}
+button,input,select {font:inherit}
 button {cursor:pointer}
-.wrap {width:min(1140px,calc(100% - 36px));margin:auto}
+.wrap {width:min(1100px,calc(100% - 34px));margin:auto}
 .top {
-  background:linear-gradient(90deg,#c49b49,#f6df9e,#c49b49);
-  padding:9px;text-align:center;font-weight:800;
-  font-size:11px;letter-spacing:1.8px;color:#122b4e;
+  text-align:center;
+  background:linear-gradient(90deg,#ca9c40,#f7e2ae,#ca9c40);
+  padding:9px;font-size:11px;font-weight:800;letter-spacing:1px;
 }
-.countdown {background:#07172f;color:white;padding:15px 0}
-.countinner {
-  display:flex;align-items:center;justify-content:center;
-  flex-wrap:wrap;gap:18px;
+.timerbar {
+  background:#07162f;color:#fff;text-align:center;padding:12px;
 }
-.countlabel {font-weight:750}
-.countlabel small {
-  display:block;color:var(--gold);text-transform:uppercase;
-  letter-spacing:1.5px;font-size:10px;
+.time {
+  display:flex;justify-content:center;gap:8px;flex-wrap:wrap;
 }
-.timer {display:flex;gap:7px;align-items:center}
-.timebox {
-  min-width:65px;background:#173461;border:1px solid #957f4a;
-  border-radius:10px;text-align:center;padding:6px 9px;
+.time span {
+  background:#1a365f;border:1px solid #b89551;
+  border-radius:9px;min-width:63px;padding:5px;
 }
-.timebox strong {display:block;font-size:26px;line-height:1.1}
-.timebox small {
-  color:#c9d6ec;font-size:9px;
-  letter-spacing:1px;text-transform:uppercase;
-}
-.sep {color:var(--gold);font-weight:900}
-.drawnote {font-size:12px;color:#d7e4fa}
-header {
-  background:#fff;position:sticky;top:0;z-index:10;
-  box-shadow:0 3px 16px #0a254414;
-}
+.time b {display:block;font-size:24px}
+.time small {display:block;font-size:10px;color:#dce6f5}
+header {background:#fff;box-shadow:0 2px 12px #07172f10}
 .nav {
-  display:flex;align-items:center;justify-content:space-between;
-  gap:16px;min-height:76px;
+  display:flex;justify-content:space-between;
+  align-items:center;gap:12px;padding:18px 0;
 }
-.brand {display:flex;align-items:center;gap:11px;color:var(--navy)}
-.cross {
-  display:grid;place-items:center;background:#0d2b60;
-  color:var(--gold);border:2px solid var(--gold);
-  border-radius:50%;width:45px;height:45px;font-size:25px;
-}
-.brand b {display:block;font:700 22px Georgia,serif}
+.brand {font:700 22px Georgia,serif;color:var(--navy)}
 .brand small {
-  display:block;letter-spacing:1.5px;
-  color:#71819b;font-size:10px;
+  display:block;font:10px system-ui;
+  letter-spacing:2px;color:#7c8590;
 }
-nav {display:flex;gap:23px;align-items:center}
-nav a {font-size:13px;font-weight:750}
-.navcta,.btn {
-  border:0;border-radius:9px;font-weight:800;
-  padding:13px 20px;display:inline-block;text-align:center;
+.btn {
+  border:0;border-radius:9px;padding:12px 19px;
+  display:inline-block;text-align:center;font-weight:800;
 }
-.navcta {background:#13376f;color:white}
-.btn-gold {
-  background:linear-gradient(125deg,#f4dc99,#c79b42);
-  color:#09224b;
+.gold {
+  background:linear-gradient(100deg,#f5dfac,#c99f4c);
+  color:#10264c;
 }
-.btn-light {
-  border:1px solid #b7c9de;color:#153a6b;background:white;
+.outline {
+  border:1px solid #b7c9dc;color:#173c70;background:#fff;
 }
-.btn-dark {background:#153b78;color:#fff}
+.blue {background:#173e79;color:#fff}
 .hero {
-  background:radial-gradient(circle at 82% 25%,#a986333b,transparent 32%),
-  linear-gradient(120deg,#06172f,#103779);
-  color:white;padding:66px 0;
+  background:
+    radial-gradient(circle at 80% 15%,#876f363c,transparent 35%),
+    linear-gradient(115deg,#06172f,#123b7b);
+  color:white;padding:60px 0;
 }
-.herogrid {
-  display:grid;grid-template-columns:1.08fr .92fr;
-  gap:45px;align-items:center;
-}
-.eyebrow {
-  font-size:11px;font-weight:800;letter-spacing:2.4px;
-  text-transform:uppercase;color:#f3d38b;
+.hero-inner {
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;gap:35px;
 }
 h1 {
-  font:400 clamp(43px,5.6vw,72px)/1.08 Georgia,serif;
-  margin:16px 0;
+  font:400 clamp(44px,5.5vw,72px)/1.07 Georgia,serif;
+  margin:12px 0 18px;
 }
 h1 em {color:var(--gold)}
-.hero p {
-  max-width:570px;color:#dce6f5;
-  font-size:16px;line-height:1.8;
+.kicker {
+  font-size:11px;font-weight:850;letter-spacing:2px;
+  color:#f3d28f;text-transform:uppercase;
 }
-.donation {
-  display:flex;align-items:center;gap:14px;margin:24px 0 0;
+.hero p {color:#dfebfa;max-width:540px}
+.hero img {
+  width:100%;height:340px;object-fit:cover;
+  border-radius:18px;border:5px solid #e2c67e;
+  box-shadow:0 16px 45px #0006;
 }
-.donation strong {
-  background:linear-gradient(135deg,#f8e5b0,#c99b45);
-  color:#09234d;font:700 35px Georgia,serif;
-  padding:12px 16px;border-radius:10px;
-}
-.donation span {font-weight:800}
-.donation small {
-  display:block;color:#d0ddec;font-size:12px;font-weight:400;
-}
-.heroactions {display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
-.heropics {position:relative;min-height:340px}
-.heropics img {
-  position:absolute;object-fit:cover;border:5px solid white;
-  border-radius:15px;box-shadow:0 20px 46px #0006;
-}
-.heropics .tv {
-  width:70%;height:260px;right:2%;top:5%;transform:rotate(5deg);
-}
-.heropics .stay {
-  width:60%;height:200px;left:0;bottom:0;transform:rotate(-8deg);
-}
-.heropics .bubble {
-  position:absolute;top:0;left:4%;background:#fff3ce;
-  color:#77571d;border:4px solid #c99d47;border-radius:50%;
-  width:104px;height:104px;display:grid;place-items:center;
-  font:italic 25px/1 Georgia,serif;text-align:center;
-  transform:rotate(-10deg);
-}
-.eventbar {background:white;border-bottom:1px solid #e8e5dd}
-.eventgrid {
+.actions {display:flex;flex-wrap:wrap;gap:12px;margin-top:23px}
+.facts {
   display:grid;grid-template-columns:repeat(3,1fr);
-  padding:22px 0;text-align:center;
+  gap:1px;background:#dfdfdf;
 }
-.eventgrid>div+div {border-left:1px solid #e6e2d9}
-.eventgrid small {
-  display:block;color:#a27f38;font-weight:850;
-  letter-spacing:1.5px;text-transform:uppercase;
+.facts div {padding:18px;background:white;text-align:center}
+.facts small {
+  display:block;color:#a27b31;text-transform:uppercase;
+  letter-spacing:1px;font-weight:800;
 }
-.eventgrid b {font-size:14px}
-.intro {text-align:center;padding:63px 0 32px}
-.intro .eyebrow {color:#b18a39}
-.intro h2 {
-  font:400 clamp(33px,4vw,45px) Georgia,serif;
-  margin:9px 0;color:#102e58;
+.facts b {font-size:14px}
+section {scroll-margin-top:20px}
+.sectionhead {text-align:center;padding:50px 0 24px}
+.sectionhead h2 {
+  font:400 42px Georgia,serif;margin:6px;
 }
-.intro p {color:var(--muted);max-width:710px;margin:auto}
-.grid {
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:23px;
+.sectionhead p {
+  color:#62728a;max-width:680px;margin:auto;
+}
+.prizes {
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
 }
 .prize {
-  background:white;border:1px solid #eae6de;
-  border-radius:17px;overflow:hidden;
-  box-shadow:0 9px 28px #122b4510;
-  transition:transform .2s;
+  background:#fff;border:1px solid #e6e1d7;
+  border-radius:15px;overflow:hidden;
+  box-shadow:0 10px 22px #16345a0d;
 }
-.prize:hover {transform:translateY(-4px)}
-.photo {height:230px;position:relative;background:#102d57}
-.photo img {height:100%;width:100%;object-fit:cover}
+.photo {position:relative;height:235px}
+.photo img {width:100%;height:100%;object-fit:cover}
 .tag {
-  position:absolute;top:13px;left:13px;
-  border:1px solid #e6ca87;border-radius:25px;
-  background:#082552f0;color:#f7d998;padding:5px 12px;
-  font-size:10px;font-weight:850;letter-spacing:1px;
+  position:absolute;top:12px;left:12px;
+  background:#0b2c5eeb;color:#f5db9d;
+  padding:5px 11px;border-radius:20px;
+  font-size:11px;font-weight:900;
 }
-.prizebody {padding:23px}
-.prizebody small {
-  font-size:10px;color:#b08d44;letter-spacing:2px;
-  text-transform:uppercase;font-weight:850;
+.prize .details {padding:20px}
+.prize h3 {
+  font:400 23px Georgia,serif;margin:4px 0 8px;
 }
-.prizebody h3 {
-  font:400 24px/1.2 Georgia,serif;color:#14325a;
-  margin:8px 0 10px;
+.prize p {color:#65748b;font-size:13px;margin:0}
+.callout {
+  text-align:center;margin:35px auto 55px;
+  background:#fff;border-radius:14px;
+  border:1px solid #e4dfd1;padding:28px;
 }
-.prizebody p {
-  font-size:13px;color:#6b7a90;margin:0;line-height:1.8;
-}
-.maincta {
-  background:white;border:1px solid #e9e4d8;
-  border-radius:16px;text-align:center;
-  margin:35px auto 65px;padding:29px 20px;
-  box-shadow:0 8px 22px #061b2f08;
-}
-.maincta h2 {font:400 29px Georgia,serif;margin:0 0 8px}
-.maincta p {
-  color:var(--muted);font-size:13px;
-  max-width:750px;margin:0 auto 20px;
-}
-.stepssection {background:#fff;padding:55px 0 60px}
-.steps {display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.step {
-  background:#f9f8f5;border:1px solid #ece8df;
-  border-radius:12px;padding:24px;
-}
-.step b {
-  background:#173a76;color:#f3da96;border-radius:50%;
-  height:40px;width:40px;display:grid;place-items:center;
-}
-.step h3 {font:400 22px Georgia,serif;margin:15px 0 8px}
-.step p {font-size:13px;color:var(--muted);margin:0}
-.notice {
-  background:#fff8e9;border-left:4px solid #d1a344;
-  padding:18px;margin-top:26px;color:#63512d;font-size:12px;
+.callout h2 {font:400 30px Georgia,serif;margin:0}
+.callout p {color:#64738b;font-size:14px}
+.disclaimer {
+  background:#fff9eb;border-left:4px solid #d1a344;
+  padding:15px;font-size:12px;
+  margin:25px auto 40px;max-width:1100px;
 }
 .giving {
-  background:linear-gradient(110deg,#081c3f,#113771);
-  color:#fff;padding:58px 0;
+  background:linear-gradient(120deg,#071832,#123b7b);
+  color:white;padding:45px 0;
 }
-.givinginner {
+.giving-inner {
   display:flex;align-items:center;
-  justify-content:space-between;gap:24px;
+  justify-content:space-between;gap:20px;
 }
-.giving h2 {font:400 33px Georgia,serif;margin:8px 0}
-.giving p {max-width:670px;color:#d5e2f6;font-size:13px}
+.giving h2 {font:400 34px Georgia,serif;margin:0}
+.giving p {max-width:650px;color:#d5e3f6;font-size:13px}
 footer {
-  background:#06162f;color:#abbfdb;
-  text-align:center;padding:30px;font-size:12px;
+  background:#06142b;color:#b7c9df;
+  padding:26px;text-align:center;font-size:12px;
 }
-.modalshade {
-  position:fixed;inset:0;background:#031329da;
-  z-index:30;display:none;align-items:center;
-  justify-content:center;padding:15px;
+.overlay {
+  display:none;position:fixed;inset:0;
+  background:#021129d9;z-index:20;
+  justify-content:center;align-items:center;padding:15px;
 }
-.modalshade.open {display:flex}
+.overlay.open {display:flex}
 .modal {
-  background:#fff;width:min(100%,520px);
-  padding:29px;border-radius:16px;
-  max-height:94vh;overflow:auto;position:relative;
+  width:min(500px,100%);max-height:93vh;overflow:auto;
+  background:#fff;border-radius:16px;
+  padding:26px;position:relative;
 }
-.modal h2 {font:400 32px Georgia,serif;margin:6px 0;color:#123461}
-.modal p {color:#687891;font-size:13px}
 .close {
-  position:absolute;right:12px;top:12px;border:0;
-  border-radius:50%;width:35px;height:35px;
-  background:#ecf0f6;font-size:22px;
+  position:absolute;right:12px;top:12px;
+  background:#e9edf4;border:0;border-radius:50%;
+  width:36px;height:36px;font-size:23px;
 }
-label {display:block;margin:16px 0 0;font-size:12px;font-weight:800}
-input {
-  display:block;width:100%;padding:12px;margin-top:5px;
-  border:1px solid #c9d4e2;border-radius:9px;
+.modal h2 {
+  font:400 30px Georgia,serif;color:#133665;
+  margin:3px 0;
 }
-.full {width:100%;margin-top:17px}
-.code {
-  border:2px dashed #c3a054;background:#fff9e9;
-  text-align:center;padding:15px;border-radius:10px;
-  font:700 27px Georgia,serif;color:#12325f;
-  overflow-wrap:anywhere;
+.modal p {font-size:13px;color:#62738c}
+.modal label {
+  display:block;font-weight:800;
+  font-size:12px;margin-top:13px;
 }
-.note {font-size:11px!important;color:#586c84!important}
+.modal input,.modal select {
+  width:100%;padding:11px;
+  border:1px solid #bac8da;border-radius:9px;
+  margin-top:5px;background:white;
+}
+.modal .checkbox {
+  display:flex;gap:9px;align-items:start;
+  font-weight:500;line-height:1.5;
+}
+.modal .checkbox input {
+  width:20px;margin-top:2px;flex-shrink:0;
+}
+.modal .wide {width:100%;margin-top:16px}
+.reference {
+  border:2px dashed #c9a04c;border-radius:10px;
+  background:#fff9e9;padding:17px;
+  font:700 25px Georgia,serif;
+  text-align:center;overflow-wrap:anywhere;
+}
+.two {
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;margin-top:14px;
+}
+.two .btn {font-size:12px;padding:12px 8px}
 .hidden {display:none!important}
-@media(max-width:950px) {
-  .grid {grid-template-columns:repeat(2,1fr)}
-  .herogrid {gap:15px}
-  nav a:not(.navcta) {display:none}
+.status {color:#a12431!important;font-weight:700!important}
+.honeypot {position:absolute;left:-10000px;opacity:0}
+@media(max-width:750px) {
+  .hero-inner {grid-template-columns:1fr}
+  .hero img {height:250px}
+  .prizes {grid-template-columns:repeat(2,1fr)}
+  .facts {grid-template-columns:1fr}
+  .giving-inner {display:block}
 }
-@media(max-width:680px) {
-  .countinner {gap:9px}
-  .countlabel,.drawnote {text-align:center;flex-basis:100%}
-  .timebox {min-width:58px}
-  .brand b {font-size:16px}
-  .brand small {font-size:8px}
-  .navcta {font-size:11px;padding:10px}
-  .herogrid {grid-template-columns:1fr}
-  .hero {padding:47px 0 38px}
-  .heropics {min-height:280px}
-  .heropics .tv {height:218px}
-  .heropics .stay {height:150px}
-  .heropics .bubble {width:75px;height:75px;font-size:18px}
-  .eventgrid {grid-template-columns:1fr;gap:12px}
-  .eventgrid>div+div {
-    border-left:none;border-top:1px solid #eee;padding-top:12px;
-  }
-  .grid,.steps {grid-template-columns:1fr}
+@media(max-width:520px) {
+  .prizes {grid-template-columns:1fr}
   .photo {height:260px}
-  .givinginner {display:block}
-  .giving .btn {margin-top:15px}
-  .intro {padding-top:45px}
+  .two {grid-template-columns:1fr}
+  .brand {font-size:18px}
+  .hero {padding:40px 0}
 }
 </style>
 </head>
-<body>
 
+<body>
 <div class="top">
-  ✦ BRIGHT LIGHT CHURCH · ANNUAL FUNDRAISING CELEBRATION ✦
+  ✦ BRIGHT LIGHT CHURCH · 89TH ANNIVERSARY FUNDRAISER ✦
 </div>
 
-<section class="countdown" aria-label="Countdown to November 14">
-  <div class="wrap countinner">
-    <div class="countlabel">
-      <small>Time remaining</small>
-      Registration interest deadline
-      <br>Nov. 14 · 11:59 PM CT
-    </div>
-    <div class="timer">
-      <div class="timebox">
-        <strong id="days">--</strong><small>Days</small>
-      </div>
-      <span class="sep">:</span>
-      <div class="timebox">
-        <strong id="hours">--</strong><small>Hours</small>
-      </div>
-      <span class="sep">:</span>
-      <div class="timebox">
-        <strong id="minutes">--</strong><small>Minutes</small>
-      </div>
-      <span class="sep">:</span>
-      <div class="timebox">
-        <strong id="seconds">--</strong><small>Seconds</small>
-      </div>
-    </div>
-    <div class="drawnote" id="deadlineLabel">
-      Drawing: Sunday, November 15, 2026
-    </div>
+<div class="timerbar">
+  <div>
+    <b>Registration interest closes November 14, 2026 at 11:59 PM CT</b>
   </div>
-</section>
+  <div class="time">
+    <span><b id="days">--</b><small>DAYS</small></span>
+    <span><b id="hours">--</b><small>HOURS</small></span>
+    <span><b id="minutes">--</b><small>MINUTES</small></span>
+    <span><b id="seconds">--</b><small>SECONDS</small></span>
+  </div>
+  <small id="countdownMessage">
+    Drawing: Sunday, November 15, 2026
+  </small>
+</div>
 
 <header>
   <div class="wrap nav">
-    <a class="brand" href="#top">
-      <span class="cross">✝</span>
-      <span>
-        <b>BRIGHT LIGHT CHURCH</b>
-        <small>ANAHUAC · TEXAS</small>
-      </span>
+    <a href="#top" class="brand">
+      ✝ BRIGHT LIGHT CHURCH
+      <small>ANAHUAC, TEXAS</small>
     </a>
-    <nav>
-      <a href="#prizes">Explore prizes</a>
-      <a href="#about">Details</a>
-      <a class="navcta" href="#participate">Participate</a>
-    </nav>
+    <a class="btn blue" href="#participate">Participate</a>
   </div>
 </header>
 
 <main id="top">
 
-<section class="hero">
-  <div class="wrap herogrid">
+<div class="hero">
+  <div class="wrap hero-inner">
     <div>
-      <div class="eyebrow">
-        Five wonderful prizes · One celebration
+      <div class="kicker">
+        Five exciting prizes · One joyful celebration
       </div>
       <h1>Give a little.<br><em>Dream big.</em></h1>
       <p>
-        Celebrate Bright Light Church's annual fundraiser!
-        Explore five featured gifts, find out about the
-        November 15 drawing, and consider supporting our
-        church family.
+        Explore five featured prizes and celebrate
+        Bright Light Church's annual fundraiser.
+        You can make a voluntary donation through Givelify
+        and keep your donation reference for church reconciliation.
       </p>
-      <div class="donation">
-        <strong>$10</strong>
-        <span>
-          Suggested donation
-          <small>
-            Voluntary church gift · Not a raffle ticket purchase
-          </small>
-        </span>
-      </div>
-      <div class="heroactions">
-        <button class="btn btn-gold" type="button" data-open>
-          Preview Registration
+      <p>
+        <strong>$10 suggested donation</strong>
+        · Optional · No drawing entries purchased online
+      </p>
+      <div class="actions">
+        <button type="button" class="btn gold" data-open>
+          Register Donation Preference
         </button>
-        <a class="btn btn-light" href="#prizes">
-          Explore the Prizes ↓
-        </a>
+        <a class="btn outline" href="#prizes">View the Prizes</a>
       </div>
     </div>
-    <div class="heropics">
-      <img class="tv" src="images/tv.webp"
-           alt="65-inch VIZIO QLED television">
-      <img class="stay" src="images/staycation.webp"
-           alt="Marriott Marquis Houston staycation">
-      <div class="bubble">5<br>Prizes</div>
-    </div>
+    <img src="images/tv.webp"
+         alt="65-inch VIZIO QLED TV with celebratory red bow">
   </div>
-</section>
-
-<section class="eventbar" id="about">
-  <div class="wrap eventgrid">
-    <div>
-      <small>Suggested Donation</small>
-      <b>$10 · Optional</b>
-    </div>
-    <div>
-      <small>Registration Interest Closes</small>
-      <b>Saturday, Nov. 14 · 11:59 PM CT</b>
-    </div>
-    <div>
-      <small>Prize Drawing</small>
-      <b>Sunday, Nov. 15, 2026</b>
-    </div>
-  </div>
-</section>
-
-<section class="wrap intro" id="prizes">
-  <div class="eyebrow">The featured gifts</div>
-  <h2>Five reasons to get excited.</h2>
-  <p>
-    All five gifts are presented together. There is no
-    separate selection or donation amount associated
-    with any individual prize.
-  </p>
-</section>
-
-<div class="wrap grid">
-
-  <article class="prize">
-    <div class="photo">
-      <img src="images/tv.webp"
-           alt="65-inch VIZIO 4K QLED TV" loading="lazy">
-      <span class="tag">PRIZE 01</span>
-    </div>
-    <div class="prizebody">
-      <small>Home entertainment</small>
-      <h3>65-inch VIZIO 4K QLED TV</h3>
-      <p>
-        A big-screen upgrade for movie nights,
-        sports, and family entertainment.
-      </p>
-    </div>
-  </article>
-
-  <article class="prize">
-    <div class="photo">
-      <img src="images/basket.webp"
-           alt="Movie-night gift basket with ShowBiz Cinemas gift card"
-           loading="lazy">
-      <span class="tag">PRIZE 02</span>
-    </div>
-    <div class="prizebody">
-      <small>Treat yourself</small>
-      <h3>Movie Night &amp; Treats Basket</h3>
-      <p>
-        Candy, coffee, popcorn, snacks, and a
-        ShowBiz Cinemas gift card.
-      </p>
-    </div>
-  </article>
-
-  <article class="prize">
-    <div class="photo">
-      <img src="images/cactus.webp"
-           alt="One-hundred-dollar Cactus Jack gift card"
-           loading="lazy">
-      <span class="tag">PRIZE 03</span>
-    </div>
-    <div class="prizebody">
-      <small>Dining out</small>
-      <h3>$100 Cactus Jack Gift Card</h3>
-      <p>
-        Enjoy a restaurant gift card for
-        Cactus Jack in Mont Belvieu, Texas.
-      </p>
-    </div>
-  </article>
-
-  <article class="prize">
-    <div class="photo">
-      <img src="images/airfryer.webp"
-           alt="Black-and-gold air fryer with red bow"
-           loading="lazy">
-      <span class="tag">PRIZE 04</span>
-    </div>
-    <div class="prizebody">
-      <small>Kitchen favorite</small>
-      <h3>Black &amp; Gold Air Fryer</h3>
-      <p>
-        A sleek kitchen appliance,
-        presented with a beautiful festive bow.
-      </p>
-    </div>
-  </article>
-
-  <article class="prize">
-    <div class="photo">
-      <img src="images/staycation.webp"
-           alt="Marriott Marquis Houston one-night staycation"
-           loading="lazy">
-      <span class="tag">PRIZE 05</span>
-    </div>
-    <div class="prizebody">
-      <small>Relax and recharge</small>
-      <h3>Marriott Marquis Houston Staycation</h3>
-      <p>
-        A one-night downtown Houston getaway.
-        Exact stay details to be confirmed by the church.
-      </p>
-    </div>
-  </article>
-
 </div>
 
-<section class="wrap maincta" id="participate">
-  <h2>One event. Five exciting prizes.</h2>
-  <p>
-    Explore the registration demonstration without choosing
-    an individual prize. Supporters can also make a separate,
-    voluntary $10 donation through Givelify.
-  </p>
-  <button class="btn btn-gold" type="button" data-open>
-    Preview Registration Form →
-  </button>
-</section>
+<div class="wrap facts">
+  <div>
+    <small>Suggested giving</small>
+    <b>$10–$100 · Optional</b>
+  </div>
+  <div>
+    <small>Registration interest closes</small>
+    <b>Sat, Nov. 14 · 11:59 PM CT</b>
+  </div>
+  <div>
+    <small>Prize drawing event</small>
+    <b>Sun, Nov. 15, 2026</b>
+  </div>
+</div>
 
-<section class="stepssection">
-  <div class="wrap">
-    <div class="intro" style="padding:0 0 27px">
-      <div class="eyebrow">Simple · Joyful · Organized</div>
-      <h2>How it works</h2>
-    </div>
-    <div class="steps">
-      <div class="step">
-        <b>01</b>
-        <h3>Browse the prizes</h3>
+<section id="prizes" class="wrap">
+  <div class="sectionhead">
+    <div class="kicker" style="color:#a78038">Explore the gifts</div>
+    <h2>Five chances to celebrate.</h2>
+    <p>
+      The prizes are displayed together; you do not choose
+      a specific item by choosing a donation amount.
+    </p>
+  </div>
+
+  <div class="prizes">
+    <article class="prize">
+      <div class="photo">
+        <img src="images/tv.webp"
+             alt="65-inch VIZIO 4K QLED TV" loading="lazy">
+        <span class="tag">PRIZE 01</span>
+      </div>
+      <div class="details">
+        <h3>65-inch VIZIO 4K QLED TV</h3>
+        <p>Big-screen home entertainment.</p>
+      </div>
+    </article>
+
+    <article class="prize">
+      <div class="photo">
+        <img src="images/basket.webp"
+             alt="Movie snack basket and ShowBiz Cinema gift card"
+             loading="lazy">
+        <span class="tag">PRIZE 02</span>
+      </div>
+      <div class="details">
+        <h3>Movie Night Gift Basket</h3>
+        <p>Candy, coffee, snacks and a ShowBiz Cinemas gift card.</p>
+      </div>
+    </article>
+
+    <article class="prize">
+      <div class="photo">
+        <img src="images/cactus.webp"
+             alt="Cactus Jack restaurant gift card"
+             loading="lazy">
+        <span class="tag">PRIZE 03</span>
+      </div>
+      <div class="details">
+        <h3>$100 Cactus Jack Gift Card</h3>
+        <p>Dining in Mont Belvieu, Texas.</p>
+      </div>
+    </article>
+
+    <article class="prize">
+      <div class="photo">
+        <img src="images/airfryer.webp"
+             alt="Black and gold air fryer"
+             loading="lazy">
+        <span class="tag">PRIZE 04</span>
+      </div>
+      <div class="details">
+        <h3>Black &amp; Gold Air Fryer</h3>
+        <p>A modern kitchen favorite.</p>
+      </div>
+    </article>
+
+    <article class="prize">
+      <div class="photo">
+        <img src="images/staycation.webp"
+             alt="One-night staycation at Marriott Marquis Houston"
+             loading="lazy">
+        <span class="tag">PRIZE 05</span>
+      </div>
+      <div class="details">
+        <h3>Marriott Marquis Houston Staycation</h3>
         <p>
-          See all five featured gifts on one page
-          without selecting a particular prize.
+          One night in downtown Houston;
+          redemption details to be confirmed.
         </p>
       </div>
-      <div class="step">
-        <b>02</b>
-        <h3>Preview registration</h3>
-        <p>
-          Enter your name, phone number, and email
-          to see how a sample reference number would appear.
-        </p>
-      </div>
-      <div class="step">
-        <b>03</b>
-        <h3>Support the church</h3>
-        <p>
-          Make a voluntary $10 donation,
-          or another amount, using the separate Givelify link.
-        </p>
-      </div>
-    </div>
-    <div class="notice">
-      <b>Important:</b> This is a design demonstration,
-      not a live raffle registration or online ticket-sale system.
-      Texas generally restricts online charitable raffle-ticket sales.
-      Donations do not purchase raffle entries or improve anyone's
-      chance of winning. Confirm raffle eligibility, official rules,
-      and compliant ticket distribution before launch.
-    </div>
+    </article>
   </div>
 </section>
 
-<section class="giving">
-  <div class="wrap givinginner">
+<div id="participate" class="wrap callout">
+  <h2>Help us celebrate and support the ministry</h2>
+  <p>
+    Select a donation preference in $10 increments,
+    receive a tracking reference, and use that reference
+    in your Givelify donation note.
+    Donations do not determine drawing eligibility
+    or number of chances.
+  </p>
+  <button type="button" class="btn gold" data-open>
+    Register Donation Preference →
+  </button>
+</div>
+
+<div class="wrap disclaimer">
+  <strong>Important:</strong>
+  This website records voluntary donation intentions for
+  reconciliation. It does not sell raffle tickets or grant paid
+  drawing entries. Texas generally prohibits online charitable
+  raffle-ticket sales. The church must independently confirm
+  and publish lawful prize-drawing rules before launch.
+  A donation reference is not a drawing ticket or proof of payment.
+</div>
+
+<div class="giving">
+  <div class="wrap giving-inner">
     <div>
-      <div class="eyebrow">Support our mission</div>
-      <h2>Give to Bright Light Church</h2>
+      <h2>Support Bright Light Church</h2>
       <p>
-        Your voluntary $10 donation supports church ministry.
-        Giving is separate from prize-drawing participation;
-        donating is not required to preview registration.
+        Your voluntary donation supports our church's mission
+        and is separate from prize-drawing eligibility.
       </p>
     </div>
-    <a class="btn btn-gold"
-       href="https://giv.li/ob0pq3"
-       target="_blank" rel="noopener noreferrer">
-      Make a $10 Donation on Givelify ↗
+    <a href="https://giv.li/ob0pq3"
+       class="btn gold" target="_blank" rel="noopener noreferrer">
+      Donate with Givelify ↗
     </a>
   </div>
-</section>
+</div>
 
 </main>
 
 <footer>
-  BRIGHT LIGHT CHURCH · 513 FM 2041 · Anahuac, TX 77514
-  <br>2026 Annual Fundraiser · Demonstration website
+  Bright Light Church · 513 FM 2041, Anahuac, TX 77514
+  · 2026 Fundraiser
 </footer>
 
-<div class="modalshade" id="shade" role="dialog"
-     aria-modal="true" aria-label="Sample registration form">
+<div id="overlay" class="overlay"
+     role="dialog" aria-modal="true"
+     aria-label="Donation registration">
   <div class="modal">
-    <button class="close" type="button" id="close"
-            aria-label="Close">×</button>
+    <button class="close" id="close"
+            type="button" aria-label="Close">×</button>
 
-    <div id="formStep">
-      <div class="eyebrow" style="color:#ac8739">
-        Fundraiser registration
+    <div id="formView">
+      <div class="kicker" style="color:#9d7c35">
+        Bright Light Church
       </div>
-      <h2>Registration Preview</h2>
+      <h2>Donation Preference</h2>
       <p>
-        One event with five featured prizes.
-        This demonstration generates a sample reference number;
-        it does not submit an actual entry.
+        Register your contact details and selected voluntary
+        donation. This creates one donation-tracking reference,
+        not a drawing entry.
       </p>
-      <form id="regForm">
-        <label>Full name
-          <input id="name" autocomplete="name"
-                 placeholder="First and last name"
-                 required maxlength="100" minlength="2">
+
+      <form id="form">
+        <label for="fullName">Full name</label>
+        <input required id="fullName" autocomplete="name"
+               minlength="2" maxlength="100">
+
+        <label for="phone">Telephone</label>
+        <input required id="phone" autocomplete="tel"
+               type="tel" minlength="7" maxlength="30">
+
+        <label for="email">Email</label>
+        <input required id="email" autocomplete="email"
+               type="email" maxlength="254">
+
+        <label for="amount">Amount you intend to donate</label>
+        <select id="amount" required>
+          <option value="">Select amount</option>
+          <option value="10">$10 donation</option>
+          <option value="20">$20 donation</option>
+          <option value="30">$30 donation</option>
+          <option value="40">$40 donation</option>
+          <option value="50">$50 donation</option>
+          <option value="60">$60 donation</option>
+          <option value="70">$70 donation</option>
+          <option value="80">$80 donation</option>
+          <option value="90">$90 donation</option>
+          <option value="100">$100 donation</option>
+        </select>
+
+        <label class="checkbox">
+          <input type="checkbox" required>
+          I consent to Bright Light Church using my information
+          to contact me about this fundraiser and reconcile
+          Givelify donations.
         </label>
-        <label>Phone number
-          <input id="phone" type="tel" autocomplete="tel"
-                 placeholder="(555) 555-1234"
-                 required minlength="7">
-        </label>
-        <label>Email address
-          <input id="email" type="email" autocomplete="email"
-                 placeholder="you@example.com" required>
-        </label>
-        <button class="btn btn-dark full" type="submit">
-          Generate Sample Reference →
+
+        <div class="honeypot" aria-hidden="true">
+          <label>
+            Website
+            <input id="website" tabindex="-1" autocomplete="off">
+          </label>
+        </div>
+
+        <p id="formMessage" class="status" role="status"></p>
+
+        <button id="save" type="submit" class="btn blue wide">
+          Next — Save Donation Preference
         </button>
       </form>
-      <p class="note">
-        Demo only: this page does not store or transmit your
-        information or create a raffle ticket.
+
+      <p style="font-size:11px;color:#64748a">
+        The church stores submitted details in a protected
+        Supabase database. No payment is processed on this site.
       </p>
     </div>
 
-    <div id="codeStep" class="hidden">
-      <div class="eyebrow" style="color:#ac8739">
-        Sample reference
-      </div>
-      <h2>Your Code Is Ready</h2>
+    <div id="successView" class="hidden">
+      <h2>Registration Saved</h2>
       <p>
-        This is a sample reference—not a confirmed ticket,
-        entry, or payment receipt.
+        You selected <strong id="displayAmount"></strong>.
+        Your donation-tracking reference is:
       </p>
-      <div class="code" id="codeValue"></div>
-      <button class="btn btn-dark full"
-              id="copy" type="button">
-        Copy Reference Code
-      </button>
-      <p id="copyStatus" class="note" role="status"></p>
-      <a class="btn btn-light full"
-         href="https://giv.li/ob0pq3"
-         target="_blank" rel="noopener noreferrer">
-        Make a Separate $10 Donation on Givelify ↗
-      </a>
-      <p class="note">
-        Donations are voluntary and are not
-        connected to raffle eligibility.
+
+      <div id="reference" class="reference"></div>
+
+      <p>
+        Copy the reference into the
+        <b>donation notes</b> on Givelify.
+        Choose the same amount again in Givelify.
+        The church will compare your donation with its payment records.
       </p>
-      <button class="btn btn-light full"
-              type="button" id="again">
+
+      <div class="two">
+        <button id="copy" type="button" class="btn blue">
+          Copy Code for Donation Notes
+        </button>
+        <a href="https://giv.li/ob0pq3"
+           target="_blank" rel="noopener noreferrer"
+           class="btn gold">
+          Submit — Open Givelify ↗
+        </a>
+      </div>
+
+      <p id="copyMessage" role="status"></p>
+      <p>
+        This is one donation reference, regardless of amount;
+        no drawing entries are assigned here.
+      </p>
+      <button type="button" class="btn outline wide" id="back">
         Back to Form
       </button>
     </div>
   </div>
 </div>
 
-<script>
-(() => {
-  const deadline =
-    new Date('2026-11-14T23:59:00-06:00').getTime();
+<script type="module">
+import {createClient} from
+  'https://esm.sh/@supabase/supabase-js@2';
 
-  const pad = value => String(value).padStart(2,'0');
+const $ = id => document.getElementById(id);
+const end = new Date('2026-11-14T23:59:00-06:00').getTime();
 
-  function updateCountdown() {
-    const remaining = Math.max(0,deadline-Date.now());
-    const total = Math.floor(remaining/1000);
+const configured =
+  window.BLC_SUPABASE_URL &&
+  window.BLC_SUPABASE_ANON_KEY &&
+  !window.BLC_SUPABASE_URL.includes('PASTE_') &&
+  !window.BLC_SUPABASE_ANON_KEY.includes('PASTE_');
 
-    document.getElementById('days').textContent =
-      pad(Math.floor(total/86400));
+const db = configured
+  ? createClient(
+      window.BLC_SUPABASE_URL,
+      window.BLC_SUPABASE_ANON_KEY
+    )
+  : null;
 
-    document.getElementById('hours').textContent =
-      pad(Math.floor(total%86400/3600));
+function tick() {
+  let s = Math.max(0,Math.floor((end-Date.now())/1000));
 
-    document.getElementById('minutes').textContent =
-      pad(Math.floor(total%3600/60));
-
-    document.getElementById('seconds').textContent =
-      pad(total%60);
-
-    if (!remaining)
-      document.getElementById('deadlineLabel').textContent =
-        'Registration interest deadline passed · Drawing Nov. 15, 2026';
+  for(const [id,v] of [
+    ['days',Math.floor(s/86400)],
+    ['hours',Math.floor(s%86400/3600)],
+    ['minutes',Math.floor(s%3600/60)],
+    ['seconds',s%60]
+  ]) {
+    $(id).textContent = String(v).padStart(2,'0');
   }
 
-  updateCountdown();
-  setInterval(updateCountdown,1000);
+  if(!s) {
+    $('countdownMessage').textContent =
+      'Registration deadline has passed · Drawing Nov. 15, 2026';
+  }
+}
 
-  const shade = document.getElementById('shade');
-  const formStep = document.getElementById('formStep');
-  const codeStep = document.getElementById('codeStep');
-  let reference = '';
+tick();
+setInterval(tick,1000);
 
-  const open = () => {
-    document.getElementById('regForm').reset();
-    formStep.classList.remove('hidden');
-    codeStep.classList.add('hidden');
-    shade.classList.add('open');
-  };
+const show = () => {
+  $('form').reset();
+  $('formMessage').textContent = '';
+  $('formView').classList.remove('hidden');
+  $('successView').classList.add('hidden');
+  $('overlay').classList.add('open');
+};
 
-  const close = () => shade.classList.remove('open');
+const hide = () => $('overlay').classList.remove('open');
 
-  document.querySelectorAll('[data-open]').forEach(
-    button => button.addEventListener('click',open)
-  );
+document.querySelectorAll('[data-open]').forEach(el =>
+  el.addEventListener('click',show)
+);
 
-  document.getElementById('close')
-    .addEventListener('click',close);
+$('close').addEventListener('click',hide);
 
-  shade.addEventListener('click',e => {
-    if (e.target===shade) close();
-  });
+$('overlay').addEventListener('click',e => {
+  if(e.target === $('overlay')) hide();
+});
 
-  document.addEventListener('keydown',e => {
-    if(e.key==='Escape') close();
-  });
+document.addEventListener('keydown',e => {
+  if(e.key === 'Escape') hide();
+});
 
-  document.getElementById('regForm')
-    .addEventListener('submit',e => {
-      e.preventDefault();
+let lastReference = '';
 
-      if(!e.currentTarget.reportValidity()) return;
+$('form').addEventListener('submit',async e => {
+  e.preventDefault();
 
-      const bytes = new Uint8Array(4);
+  if(!e.currentTarget.reportValidity()) return;
 
-      if(window.crypto && window.crypto.getRandomValues)
-        window.crypto.getRandomValues(bytes);
-      else
-        for(let i=0;i<bytes.length;i++)
-          bytes[i]=Math.floor(Math.random()*256);
+  const amount = Number($('amount').value);
 
-      reference='BLC-DEMO-'+Array.from(
-        bytes,n=>n.toString(16).padStart(2,'0')
-      ).join('').toUpperCase();
+  if(Date.now() > end) {
+    $('formMessage').textContent = 'Registration is closed.';
+    return;
+  }
 
-      document.getElementById('codeValue').textContent =
-        reference;
+  if(!db) {
+    $('formMessage').textContent =
+      'Setup incomplete. Add Supabase project settings to config.js.';
+    return;
+  }
 
-      document.getElementById('copyStatus').textContent='';
+  const save = $('save');
+  save.disabled = true;
+  save.textContent = 'Saving...';
 
-      formStep.classList.add('hidden');
-      codeStep.classList.remove('hidden');
+  try {
+    const {data,error} = await db.rpc('blc_register_pledge',{
+      p_full_name:$('fullName').value.trim(),
+      p_phone:$('phone').value.trim(),
+      p_email:$('email').value.trim(),
+      p_pledged_amount:amount,
+      p_website:$('website').value
     });
 
-  document.getElementById('again')
-    .addEventListener('click',()=>{
-      codeStep.classList.add('hidden');
-      formStep.classList.remove('hidden');
-    });
+    if(error) throw error;
 
-  document.getElementById('copy')
-    .addEventListener('click',async()=>{
-      const status=document.getElementById('copyStatus');
+    if(typeof data !== 'string' ||
+       !data.startsWith('BLC-DON-')) {
+      throw Error('Unexpected confirmation');
+    }
 
-      try {
-        await navigator.clipboard.writeText(reference);
-        status.textContent='Reference copied!';
-      }
-      catch(e) {
-        status.textContent =
-          'Please select and copy the reference above manually.';
-      }
-    });
-})();
+    lastReference = data;
+    $('reference').textContent = data;
+    $('displayAmount').textContent = '$'+amount.toFixed(2);
+
+    $('formView').classList.add('hidden');
+    $('successView').classList.remove('hidden');
+
+  } catch(error) {
+    $('formMessage').textContent =
+      'Could not save: '+(error.message || 'Please retry.');
+  } finally {
+    save.disabled = false;
+    save.textContent = 'Next — Save Donation Preference';
+  }
+});
+
+$('copy').addEventListener('click',async () => {
+  try {
+    await navigator.clipboard.writeText(lastReference);
+    $('copyMessage').textContent =
+      'Copied! Paste into Givelify donation notes.';
+  } catch {
+    $('copyMessage').textContent =
+      'Copy manually: '+lastReference;
+  }
+});
+
+$('back').addEventListener('click',() => {
+  $('successView').classList.add('hidden');
+  $('formView').classList.remove('hidden');
+});
 </script>
+
 </body>
 </html>

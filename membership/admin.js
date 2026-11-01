@@ -11,6 +11,10 @@ async function loadMembers(){
  ]);
  if(mr.error)return notify(mr.error.message,true);if(hr.error)return notify(hr.error.message,true);
  roster=mr.data||[];households=hr.data||[];
+ const requested=new URLSearchParams(location.search).get('member');
+ if(requested && /^[0-9a-f-]{36}$/i.test(requested) && roster.some(m=>m.id===requested)){
+   selectedId=requested;history.replaceState(null,'',location.pathname);
+ }
  byId('total').textContent=roster.length;byId('pending').textContent=roster.filter(x=>x.membership_status==='pending').length;byId('active').textContent=roster.filter(x=>x.membership_status==='active').length;
  fillChoices();renderMembers();if(selectedId)openCard(selectedId);
 }

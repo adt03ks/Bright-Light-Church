@@ -9,9 +9,10 @@ async function refreshMemberPage() {
   if (error) return notify(error.message, true);
   memberId = data?.id || null;
   byId('profileStatus').textContent = data ? `Membership status: ${data.membership_status}. Member number: BLC-${String(data.member_number).padStart(6,'0')}` : 'Complete this form to submit your member record.';
-  for (const name of ['first_name','last_name','preferred_name','email','phone','date_of_birth','anniversary_date']) {
+  for (const name of ['first_name','last_name','preferred_name','email','phone','date_of_birth','anniversary_date','street_address','city','state','postal_code','spouse_name_text','household_name_text']) {
     byId('profileForm').elements[name].value = data?.[name] || (name === 'email' ? user.email || '' : '');
   }
+  syncMinorCheckbox(byId('profileForm'));
 }
 byId('authForm').addEventListener('submit', async event => {
   event.preventDefault();
@@ -30,10 +31,12 @@ byId('signUp').addEventListener('click', async () => {
 byId('signOut').addEventListener('click',async()=>{await client.auth.signOut();notify('Signed out.');await refreshMemberPage();});
 byId('profileForm').addEventListener('submit',async event=>{
   event.preventDefault(); const user=await currentUser(); if(!user)return notify('Sign in first.',true);
+  try { validateMinor(event.currentTarget); } catch(err) { return notify(err.message,true); }
   const payload=memberPayload(event.currentTarget);
   const query=memberId?client.from('blc_members').update(payload).eq('id',memberId):client.from('blc_members').insert({...payload,auth_user_id:user.id});
   const {error}=await query;
   if(error)return notify(error.message,true);
   notify(memberId?'Profile saved.':'Profile submitted for administrative review.'); await refreshMemberPage();
 });
+attachMinorForm(byId('profileForm'));
 refreshMemberPage();

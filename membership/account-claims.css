@@ -1,0 +1,11 @@
+.claim-panel{border:1px solid #4d647b;padding:18px;border-radius:14px;margin:18px 0;background:#152337}
+.claim-panel h3{margin-top:0;color:#ead39b}
+.claim-panel .claim-private{border-left:3px solid #bfa468;padding-left:12px}
+.claim-panel .notice{font-weight:600}
+.match-result{border:1px solid #40546a;border-radius:10px;padding:12px;margin-top:12px}
+.match-result strong{color:#ead39b}
+.match-result small{display:block;margin:5px 0}
+.match-actions{display:flex;gap:8px;flex-wrap:wrap}
+.match-actions button{margin:0}
+.reviewcard{border-top:1px solid #394b5c;padding:16px 0}
+.reviewcard .warning{color:#edc28c}

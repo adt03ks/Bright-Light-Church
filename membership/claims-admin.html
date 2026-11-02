@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Membership Account Requests | Bright Light Church</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="account-claims.css">
+</head>
+<body>
+<header><strong>BRIGHT LIGHT CHURCH</strong><div>Private Member Account Connections</div></header>
+<main>
+  <div class="row"><h1>Account Linking Requests</h1><a href="admin.html">Membership Admin</a><a href="portal.html">My Church Portal</a></div>
+  <div class="panel"><p>Use this page to match a new website login to a member already in the church directory. Match results are suggestions, not proof of identity. Verify with the member before approving.</p>
+  <p id="status" class="notice" role="status" aria-live="polite">Checking administrator access…</p>
+  <button type="button" class="secondary" id="reload" hidden>Refresh requests</button></div>
+  <section class="panel hidden" id="requestArea">
+    <div class="row"><h2>Awaiting Staff Review</h2><span id="count"></span></div>
+    <div id="requests"></div>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script defer src="claims-admin.js"></script>
+</body>
+</html>

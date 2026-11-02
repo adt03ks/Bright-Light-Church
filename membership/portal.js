@@ -20,8 +20,9 @@
     const {data,error}=await db.auth.getUser();
     if(error||!data?.user){location.replace('login.html');return;}
     const user=data.user;el('account-email').textContent=user.email||'';
-    const [memberResult,staff,finance,content,fundraiser]=await Promise.all([
+    const [memberResult,claimResult,staff,finance,content,fundraiser]=await Promise.all([
       db.from('blc_members').select('first_name,last_name,membership_status,member_number').eq('auth_user_id',user.id).maybeSingle(),
+      db.from('blc_profile_claims').select('status').eq('requester_auth_user_id',user.id).maybeSingle(),
       getOwnRecord('blc_staff_roles',user.id,'role'),
       getOwnRecord('blc_finance_roles',user.id,'role'),
       getOwnRecord('blc_content_roles',user.id,'role'),
@@ -29,11 +30,12 @@
     ]);
     const member=memberResult.error?null:memberResult.data;
     el('display-name').textContent=member?('Welcome, '+[member.first_name,member.last_name].filter(Boolean).join(' ')+'!'):'Welcome, church member!';
-    el('member-status').textContent=member?('Membership: '+member.membership_status):'Profile not submitted';
-    el('profile-hint').textContent=member?('Member ID: BLC-'+String(member.member_number).padStart(6,'0')):'Complete your membership profile to connect your account to church records.';
+    el('member-status').textContent=member?('Membership: '+member.membership_status):(claimResult.data?.status==='pending'?'Profile linking: Awaiting review':claimResult.data?.status==='rejected'?'Profile linking: Needs review':'Profile not linked');
+    el('profile-hint').textContent=member?('Member ID: BLC-'+String(member.member_number).padStart(6,'0')):(claimResult.data?.status==='pending'?'Your profile connection request is under church administrator review.':'Open My Member Profile to request secure linking to an existing church record.');
     const links=el('staff-links');links.replaceChildren();
     if(staff && ['super_admin','admin','secretary'].includes(staff.role)){
       links.append(makeCard('Membership Admin','Manage member records, family connections, and review pending profiles.','admin.html','♧'));
+      links.append(makeCard('Account Linking Requests','Review existing member matches and connect registered logins.','claims-admin.html','♙'));
       links.append(makeCard('Missing Information Report','Identify profiles missing birthdates, contact information, or addresses.','missing-info-report.html','▤'));
       links.append(makeCard('Events & Birthdays Admin','Manage church events and approved public birthday announcements.','calendar-admin.html','▦'));
     }

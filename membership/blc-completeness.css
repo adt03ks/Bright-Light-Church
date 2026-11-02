@@ -1,0 +1,15 @@
+/* Bright Light Church — optional contact information + completeness score */
+.blc-contact-choice{display:flex!important;align-items:flex-start;gap:9px;grid-column:span 1;color:#e9d6a6;font-size:.88rem;line-height:1.4}
+.blc-contact-choice input[type="checkbox"]{width:18px!important;min-width:18px;height:18px;margin:2px 0 0!important;accent-color:#c8a56a}
+input:disabled{opacity:.62;background:#253245!important;cursor:not-allowed}
+.blc-completeness{padding:15px 17px;margin:16px 0;border:1px solid #42546b;border-radius:12px;background:#142236;color:#eff5ff}
+.blc-completeness.hidden{display:none}
+.blc-score-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;color:#f6e6bb}
+.blc-score-track{height:10px;border-radius:12px;background:#34445a;overflow:hidden;margin:12px 0}
+.blc-score-fill{height:100%;border-radius:12px;background:linear-gradient(90deg,#b3915b,#e7cc8f);transition:width .2s}
+.blc-score-items{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:7px 14px;list-style:none;padding:0;margin:12px 0}
+.blc-score-items li{font-size:.86rem}
+.blc-score-items .is-complete{color:#9de5be}.blc-score-items .is-missing{color:#ffd1a7}
+.blc-completeness small{color:#c4ccd7}
+.blc-report-exceptions{font-size:.88rem;color:#d8c395}
+@media(max-width:620px){.blc-score-items{grid-template-columns:1fr}}

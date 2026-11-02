@@ -15,13 +15,15 @@ async function refreshMemberPage(){
   memberId=data?.id||null;
   const found=!!data;
   byId('claimPanel').classList.toggle('hidden',found);
+  byId('memberCompleteness').classList.toggle('hidden',!found);
   memberForm.classList.toggle('hidden',!found);
   if(found){
     byId('profileStatus').textContent=`Membership status: ${data.membership_status}. Member number: BLC-${String(data.member_number).padStart(6,'0')}`;
     for(const field of ['first_name','last_name','preferred_name','email','phone','date_of_birth','anniversary_date','street_address','city','state','postal_code','spouse_name_text','household_name_text']){
-      if(memberForm.elements[field])memberForm.elements[field].value=data[field]||(field==='email'?user.email||'':'');
+      if(memberForm.elements[field])memberForm.elements[field].value=data[field]||'';
     }
     syncMinorCheckbox(memberForm);
+    blcSetContactFlags(memberForm,data);
     return;
   }
   byId('profileStatus').textContent='This login is not yet connected to a church member profile.';
@@ -87,7 +89,7 @@ claimForm.addEventListener('submit',async e=>{
 memberForm.addEventListener('submit',async e=>{
   e.preventDefault();if(!memberId)return notify('Please submit an account-link request first.',true);
   const user=await currentUser();if(!user)return notify('Sign in first.',true);
-  try{validateMinor(memberForm);}catch(err){return notify(err.message,true);}
+  try{validateMinor(memberForm);blcCheckContactFlags(memberForm);}catch(err){return notify(err.message,true);}
   const payload=memberPayload(memberForm);
   // This form does not contain member_since; do not erase an existing join date.
   delete payload.member_since;
@@ -96,4 +98,5 @@ memberForm.addEventListener('submit',async e=>{
   notify('Member profile updated.');await refreshMemberPage();
 });
 attachMinorForm(memberForm);
+blcBindContactForm(memberForm);
 refreshMemberPage().catch(err=>notify(err.message,true));

@@ -11,8 +11,13 @@ function memberPayload(form) {
   const values = Object.fromEntries(new FormData(form).entries());
   return {
     first_name: clean(values.first_name), last_name: clean(values.last_name),
-    preferred_name: optional(values.preferred_name), email: optional(values.email),
-    phone: optional(values.phone), date_of_birth: optional(values.date_of_birth),
+    preferred_name: optional(values.preferred_name),
+    email: form.elements.email_unavailable?.checked ? null : optional(values.email),
+    phone: form.elements.mobile_unavailable?.checked ? null : optional(values.phone),
+    email_unavailable: !!form.elements.email_unavailable?.checked,
+    mobile_unavailable: !!form.elements.mobile_unavailable?.checked,
+    home_phone: optional(values.home_phone),
+    date_of_birth: optional(values.date_of_birth),
     anniversary_date: optional(values.anniversary_date),
     member_since: optional(values.member_since),
     street_address: optional(values.street_address), city: optional(values.city),

@@ -13,7 +13,7 @@
   <nav><a href="admin.html">Member Administration</a><a href="../index.html" target="_blank" rel="noopener">Open Website ↗</a></nav>
 </header>
 <main>
-  <div class="page-intro"><div><p class="eyebrow">Website administration</p><h1>Point, click &amp; edit your website</h1><p class="muted">See the actual homepage, click the section you want, preview your changes, then save when you're ready.</p></div><div class="status-pill"><span class="status-dot"></span> Your live website is unchanged until you publish</div></div>
+  <div class="page-intro"><div><p class="eyebrow">Website administration</p><h1>Point, click &amp; edit your website</h1><p class="muted">Choose any connected public page, click a highlighted section, preview your changes, then publish when ready.</p></div><div class="status-pill"><span class="status-dot"></span> Your live website is unchanged until you publish</div></div>
   <p id="notice" role="status" aria-live="polite"></p>
   <section id="signin-panel" class="signin-panel">
     <h2>Authorized editors only</h2><p class="muted">Use the same Supabase account you use for the Bright Light Church Content Manager.</p>
@@ -22,17 +22,18 @@
   <section id="editor-panel" hidden>
     <div class="sessionbar"><span id="signed-in"></span><button id="logout" class="text-button" type="button">Sign out</button></div>
     <div class="workspace">
-      <aside class="panel sections-panel" aria-label="Homepage sections">
-        <div class="panel-heading"><div><p class="eyebrow">STEP 1</p><h2>Choose a section</h2></div><span class="number-mark">10</span></div>
+      <aside class="panel sections-panel" aria-label="Website pages and sections">
+        <div class="panel-heading"><div><p class="eyebrow">STEP 1</p><h2>Choose page &amp; section</h2></div><span class="number-mark" id="section-count">0</span></div>
+        <label for="page-select" class="page-select-label">Website page</label><select id="page-select" class="page-select" aria-label="Choose a website page"></select>
         <p class="hint">Click a section below, or click it directly in the website preview.</p>
         <div id="section-list" class="section-list"></div>
-        <div class="advanced"><details><summary>Advanced: existing content entries</summary><label for="filter">Filter page key</label><input id="filter" placeholder="e.g. home"><button id="reload" class="secondary" type="button">Refresh entries</button><div id="entries"></div><button id="new" type="button" class="secondary">Add manual content slot</button></details></div>
+        <div class="advanced"><details><summary>Advanced: existing content entries</summary><label for="filter">Filter page key</label><input id="filter" placeholder="Filter content entries"><button id="reload" class="secondary" type="button">Refresh entries</button><div id="entries"></div><p class="hint">Sections are identified automatically. Choose them above instead of typing keys.</p></details></div>
       </aside>
       <section class="panel preview-panel" aria-label="Website visual preview">
-        <div class="panel-heading"><div><p class="eyebrow">STEP 2</p><h2>See what you're editing</h2></div><a class="open-link" href="../index.html" target="_blank" rel="noopener">Open full page ↗</a></div>
+        <div class="panel-heading"><div><p class="eyebrow">STEP 2</p><h2>See what you're editing</h2></div><a class="open-link" id="open-page" href="../index.html" target="_blank" rel="noopener">Open full page ↗</a></div>
         <div class="preview-toolbar"><div class="viewport-options" role="group" aria-label="Preview size"><button id="desktop-size" class="view-active" type="button" aria-pressed="true">Desktop</button><button id="mobile-size" type="button" aria-pressed="false">Mobile</button></div><button class="secondary" id="reload-preview" type="button">Reset preview</button></div>
         <div class="preview-legend"><span><i class="legend-section"></i> Selected section</span><span><i class="legend-title"></i> Headline</span><span><i class="legend-caption"></i> Caption</span><span><i class="legend-image"></i> Photo</span></div>
-        <div class="preview-shell" id="preview-shell"><iframe id="website-preview" title="Clickable preview of the Bright Light Church homepage" src="../index.html?blc_visual_editor=1"></iframe></div>
+        <div class="preview-shell" id="preview-shell"><iframe id="website-preview" title="Clickable preview of the selected Bright Light Church page" src="../index.html?blc_visual_editor=1"></iframe></div>
         <div id="preview-status" class="preview-status" role="status">Click any highlighted section in the preview to edit it.</div>
         <p class="preview-note">This is a preview inside the church website—not the editing form. Links inside the preview are disabled so you can select sections safely.</p>
       </section>

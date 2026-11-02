@@ -1,364 +1,217 @@
 'use strict';
-
-// Homepage slot descriptions correspond to data-blc-page="home" / data-blc-slot
-// markers already installed in the Bright Light Church index.html.
-const HOME_SECTIONS = [
-  { key: 'hero', label: 'Top welcome banner', location: 'Very top of homepage', icon: '✦', description: 'Large worship hero photo, main headline, and introductory paragraph.' },
-  { key: 'welcome', label: 'Welcome & fellowship', location: 'Below service times', icon: '♥', description: 'Church family photo, “Rooted in Scripture” headline, and first welcome paragraph.' },
-  { key: 'values', label: 'Our church values', location: 'Dark blue section', icon: '▤', description: '“Faith for every generation” heading and the introductory line above the three value cards.' },
-  { key: 'pastor', label: 'Meet our pastor', location: 'Pastor feature', icon: '♧', description: 'Pastor photo, Pastor Archie’s displayed name, and the first biography paragraph.' },
-  { key: 'ministry-youth', label: 'Youth & children', location: 'First ministry card', icon: '★', description: 'Youth ministry photo, Youth & Children heading, and description.' },
-  { key: 'ministry-prayer', label: 'Prayer & discipleship', location: 'Second ministry card', icon: '✧', description: 'Prayer ministry photo, heading, and description.' },
-  { key: 'ministry-worship', label: 'Music & worship', location: 'Third ministry card', icon: '♫', description: 'Worship ministry photo, heading, and description.' },
-  { key: 'watch', label: 'Bright Light TV', location: 'Featured message section', icon: '▶', description: 'Featured sermon image, “The Word goes where you are” heading, and paragraph.' },
-  { key: 'events', label: 'Upcoming events', location: 'Events section', icon: '▦', description: 'Events heading and event description. The “Coming Soon” date block is not controlled here.' },
-  { key: 'visit', label: 'Closing invitation', location: 'Bottom of homepage', icon: '⌂', description: '“Come as you are” heading only. The church address and buttons remain unchanged.' }
-];
-
+/* Bright Light Church Content Manager, multi-page visual editor.
+   Requires existing CMS RLS, membership/config.js, and same-origin public pages.
+*/
 const $ = id => document.getElementById(id);
-const db = (window.supabase?.createClient && window.BLC_SUPABASE_URL && window.BLC_SUPABASE_ANON_KEY)
-  ? window.supabase.createClient(window.BLC_SUPABASE_URL, window.BLC_SUPABASE_ANON_KEY)
-  : null;
-let authUser = null;
-let records = [];
-let selected = null;
-let activeKey = null;
-let frameReady = false;
-let unsavedPreview = false;
-let imageObjectUrl = null;
-
-function notice(message) { $('notice').textContent = message; }
-function must(result) { if (result.error) throw result.error; return result.data; }
-function currentRow(page, slot) { return records.find(x => x.page_key === page && x.slot_key === slot) || null; }
-function frameDocument() {
-  try { return $('website-preview').contentDocument; }
-  catch { return null; }
+const db = window.supabase?.createClient && window.BLC_SUPABASE_URL && window.BLC_SUPABASE_ANON_KEY
+  ? window.supabase.createClient(window.BLC_SUPABASE_URL, window.BLC_SUPABASE_ANON_KEY) : null;
+const FALLBACK_PAGES = [
+  {key:'home',label:'Home',file:'index.html'},
+  {key:'about',label:'Our Story',file:'about.html'},
+  {key:'leadership',label:'Leadership',file:'leadership.html'},
+  {key:'ministries',label:'Ministries',file:'ministries.html'},
+  {key:'watch',label:'Bright Light TV',file:'watch.html'},
+  {key:'events',label:'Events',file:'events.html'},
+  {key:'visit',label:'Plan a Visit',file:'visit.html'},
+  {key:'giving',label:'Giving',file:'giving.html'},
+  {key:'contact',label:'Contact & Prayer',file:'contact.html'},
+  {key:'services',label:'Church Services',file:'services.html'}
+];
+const HOME_LABELS={
+  hero:'Top welcome banner',welcome:'Welcome & fellowship',values:'Our church values',
+  pastor:'Meet our pastor','ministry-youth':'Youth & children',
+  'ministry-prayer':'Prayer & discipleship','ministry-worship':'Music & worship',
+  watch:'Bright Light TV',events:'Upcoming events',visit:'Closing invitation'
+};
+let pages=FALLBACK_PAGES;
+let pageKey='home',activeKey=null,sections=[],records=[],authUser=null;
+let frameReady=false,unsavedPreview=false,imageObjectUrl=null;
+const notice=message=>{$('notice').textContent=message;};
+const must=r=>{if(r.error)throw r.error;return r.data;};
+const currentPage=()=>pages.find(x=>x.key===pageKey) || pages[0];
+const currentRow=(key,slot)=>records.find(r=>r.page_key===key&&r.slot_key===slot)||null;
+function frameDocument(){try{return $('website-preview').contentDocument;}catch{return null;}}
+function scoped(node, selector){if(node?.matches?.(selector))return node;return [...(node?.querySelectorAll(selector)||[])].find(x=>x.closest('[data-blc-slot]')===node)||null;}
+function selectedNode(){const doc=frameDocument();return doc && [...doc.querySelectorAll('[data-blc-page][data-blc-slot]')].find(x=>x.dataset.blcPage===pageKey&&x.dataset.blcSlot===activeKey)||null;}
+function status(message,unsaved=false){$('preview-status').textContent=message;$('preview-status').classList.toggle('unsaved',unsaved);}
+function clearImage(){if(imageObjectUrl)URL.revokeObjectURL(imageObjectUrl);imageObjectUrl=null;}
+function imageUrl(path){return path&&db?db.storage.from('blc-site-images').getPublicUrl(path)?.data?.publicUrl:null;}
+function imageThumb(path){const url=imageUrl(path);$('preview').hidden=!url;if(url)$('preview').src=url;else $('preview').removeAttribute('src');}
+function fillForm(row){$('content-form').reset();$('page-key').value=row?.page_key||pageKey;$('slot-key').value=row?.slot_key||activeKey||'';$('title').value=row?.title||'';$('caption').value=row?.caption||'';$('alt').value=row?.image_alt||'';$('image-path').value=row?.image_path||'';$('published').checked=!!row?.published;clearImage();imageThumb(row?.image_path);}
+function getSections(){
+  const doc=frameDocument();
+  if(!doc)return [];
+  return [...doc.querySelectorAll('[data-blc-page][data-blc-slot]')]
+    .filter(el=>el.dataset.blcPage===pageKey)
+    .map((el,i)=>{
+      const key=el.dataset.blcSlot;
+      const name=el.dataset.blcEditorLabel||((pageKey==='home'&&HOME_LABELS[key])||'')||scoped(el,'h1,h2,h3,h4')?.textContent?.replace(/\s+/g,' ').trim()||`Section ${i+1}`;
+      const fields=[scoped(el,'[data-blc-title]'),scoped(el,'[data-blc-caption]'),scoped(el,'[data-blc-image]')].filter(Boolean).length;
+      return {key,label:name.slice(0,70),number:i+1,fields};
+    }).filter(s=>s.fields);
 }
-function selectedNode() {
-  const doc = frameDocument();
-  return doc && activeKey ? [...doc.querySelectorAll('[data-blc-page="home"][data-blc-slot]')]
-    .find(el => el.dataset.blcSlot === activeKey) : null;
-}
-function setPreviewStatus(message, isUnsaved = false) {
-  $('preview-status').textContent = message;
-  $('preview-status').classList.toggle('unsaved', isUnsaved);
-}
-function clearObjectUrl() {
-  if (imageObjectUrl) URL.revokeObjectURL(imageObjectUrl);
-  imageObjectUrl = null;
-}
-function getPublicImageUrl(path) {
-  if (!path) return null;
-  return db.storage.from('blc-site-images').getPublicUrl(path)?.data?.publicUrl || null;
-}
-function imageThumbnail(path) {
-  const url = getPublicImageUrl(path);
-  if (!url) { $('preview').hidden = true; $('preview').removeAttribute('src'); return; }
-  $('preview').src = url;
-  $('preview').hidden = false;
-}
-function fillEntry(row) {
-  selected = row;
-  $('content-form').reset();
-  $('page-key').value = row?.page_key || 'home';
-  $('slot-key').value = row?.slot_key || activeKey || '';
-  $('title').value = row?.title || '';
-  $('caption').value = row?.caption || '';
-  $('alt').value = row?.image_alt || '';
-  $('image-path').value = row?.image_path || '';
-  $('published').checked = !!row?.published;
-  clearObjectUrl();
-  imageThumbnail(row?.image_path);
-}
-function renderSections() {
-  const container = $('section-list');
-  container.replaceChildren();
-  for (const section of HOME_SECTIONS) {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'section-button' + (activeKey === section.key ? ' active' : '');
-    button.dataset.key = section.key;
-    button.setAttribute('aria-pressed', String(activeKey === section.key));
-    const icon = document.createElement('span');
-    icon.className = 'section-icon'; icon.textContent = section.icon;
-    icon.setAttribute('aria-hidden', 'true');
-    const text = document.createElement('span'); text.className = 'section-text';
-    const strong = document.createElement('strong'); strong.textContent = section.label;
-    const small = document.createElement('small'); small.textContent = section.location;
-    text.append(strong, small);
-    button.append(icon, text);
-    button.addEventListener('click', () => selectHomepageSection(section.key));
-    container.appendChild(button);
+function renderSections(){
+  const list=$('section-list');list.replaceChildren();$('section-count').textContent=String(sections.length);
+  for(const s of sections){
+    const btn=document.createElement('button');btn.type='button';btn.className='section-button'+(activeKey===s.key?' active':'');btn.setAttribute('aria-pressed',String(activeKey===s.key));
+    const symbol=document.createElement('span');symbol.className='section-icon';symbol.textContent=String(s.number).padStart(2,'0');
+    const txt=document.createElement('span');txt.className='section-text';const h=document.createElement('strong');h.textContent=s.label;const sub=document.createElement('small');sub.textContent=`${s.fields} editable field${s.fields===1?'':'s'}`;txt.append(h,sub);btn.append(symbol,txt);
+    btn.addEventListener('click',()=>selectSection(s.key));list.appendChild(btn);
   }
+  if(!sections.length){const p=document.createElement('p');p.className='hint';p.textContent='No editable sections detected. Verify this page has the new site integration.';list.appendChild(p);}
 }
-function renderRecords() {
-  const query = $('filter').value.trim().toLowerCase();
-  const entries = $('entries'); entries.replaceChildren();
-  const results = records.filter(x => !query || x.page_key.includes(query));
-  for (const row of results) {
-    const button = document.createElement('button');
-    button.type = 'button'; button.className = 'entry';
-    button.textContent = `${row.page_key} / ${row.slot_key} — ${row.published ? 'Published' : 'Draft'}`;
-    button.addEventListener('click', () => {
-      if (row.page_key === 'home' && HOME_SECTIONS.some(x => x.key === row.slot_key)) {
-        selectHomepageSection(row.slot_key);
-      } else {
-        if (unsavedPreview) reloadPreview();
-        activeKey = null; renderSections(); fillEntry(row);
-        $('page-key').readOnly = false; $('slot-key').readOnly = false;
-        $('selection-summary').replaceChildren();
-        const heading = document.createElement('strong'); heading.textContent = `Editing ${row.page_key} / ${row.slot_key}`;
-        const body = document.createElement('p'); body.textContent = 'This entry has no visual homepage mapping. The editor still works, but its page must have a matching content slot.';
-        $('selection-summary').append(heading, body);
-        $('current-content').hidden = true;
-        for (const id of ['title-field','caption-field','image-field','alt-field','image-path-field','title-hint']) $(id).hidden = false;
-        setPreviewStatus('Visual selection is currently available for the homepage only.');
-      }
-    });
-    entries.appendChild(button);
+function renderRecords(){
+  const q=$('filter').value.trim().toLowerCase();const list=$('entries');list.replaceChildren();
+  const found=records.filter(r=>r.page_key===pageKey&&(!q||`${r.page_key} ${r.slot_key}`.includes(q)));
+  for(const row of found){
+    const b=document.createElement('button');b.type='button';b.className='entry';b.textContent=`${row.slot_key} — ${row.published?'Published':'Draft'}`;
+    b.addEventListener('click',()=>{if(sections.some(s=>s.key===row.slot_key))selectSection(row.slot_key);else notice(`The saved slot ${row.slot_key} does not match a current section of this page. It may belong to an older page layout.`);});list.appendChild(b);
   }
-  if (!results.length) entries.textContent = 'No saved content for this page yet.';
+  if(!found.length)list.textContent='No saved content for this page yet.';
 }
-function setEditorFieldAvailability(node) {
-  const hasTitle = !!node?.querySelector('[data-blc-title]');
-  const hasCaption = !!node?.querySelector('[data-blc-caption]');
-  const hasImage = !!node?.querySelector('[data-blc-image]');
-  $('title-field').hidden = !hasTitle;
-  $('title-hint').hidden = !hasTitle;
-  $('caption-field').hidden = !hasCaption;
-  $('image-field').hidden = !hasImage;
-  $('alt-field').hidden = !hasImage;
-  $('image-path-field').hidden = !hasImage;
-  $('current-content').hidden = !node;
-  if (node) {
-    $('current-title').textContent = node.querySelector('[data-blc-title]')?.textContent?.replace(/\s+/g, ' ').trim() || '(no editable headline)';
-    $('current-caption').textContent = node.querySelector('[data-blc-caption]')?.textContent?.replace(/\s+/g, ' ').trim() || '(no editable caption)';
+function fields(node){
+  const title=scoped(node,'[data-blc-title]'),caption=scoped(node,'[data-blc-caption]'),image=scoped(node,'[data-blc-image]');
+  $('title-field').hidden=$('title-hint').hidden=!title;
+  $('caption-field').hidden=!caption;
+  $('image-field').hidden=$('alt-field').hidden=$('image-path-field').hidden=!image;
+  $('current-content').hidden=!node;
+  if(node){$('current-title').textContent=title?.textContent?.replace(/\s+/g,' ').trim()||'(no editable headline)';$('current-caption').textContent=caption?.textContent?.replace(/\s+/g,' ').trim()||'(no editable caption)';}
+}
+function highlight(scroll=true){
+  const doc=frameDocument();if(!doc)return;
+  doc.querySelectorAll('.blc-visual-selected').forEach(el=>el.classList.remove('blc-visual-selected'));
+  const node=selectedNode();if(!node)return;
+  node.classList.add('blc-visual-selected');fields(node);
+  if(scroll)node.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function selectSection(key,fromFrame=false){
+  const section=sections.find(s=>s.key===key);if(!section)return;
+  if(unsavedPreview&&activeKey!==key)reloadPreview();
+  activeKey=key;fillForm(currentRow(pageKey,key));
+  $('page-key').readOnly=true;$('slot-key').readOnly=true;
+  $('selection-summary').replaceChildren();const h=document.createElement('strong');h.textContent=`${currentPage().label} → ${section.label}`;
+  const p=document.createElement('p');const row=currentRow(pageKey,key);p.textContent=row?(row.published?'This section currently has published content.':'This section has a saved draft.'):'This section is showing the original website content.';
+  $('selection-summary').append(h,p);renderSections();renderRecords();fields(selectedNode());highlight(!fromFrame);
+  if(!unsavedPreview)status(`Selected: ${section.label}. The gold border identifies the section you are editing.`);
+}
+function loadPage(key,desiredSlot){
+  const page=pages.find(p=>p.key===key);if(!page)return;
+  pageKey=key;activeKey=desiredSlot||null;sections=[];frameReady=false;unsavedPreview=false;clearImage();
+  $('page-select').value=pageKey;
+  $('open-page').href=`../${encodeURIComponent(page.file)}`;
+  $('website-preview').title=`Clickable visual preview: ${page.label}`;
+  $('website-preview').src=`../${encodeURIComponent(page.file)}?blc_visual_editor=1`;
+  $('section-list').replaceChildren();$('section-count').textContent='…';
+  $('selection-summary').textContent='Loading page sections…';$('current-content').hidden=true;
+  $('content-form').reset();status(`Loading ${page.label} preview…`);renderRecords();
+}
+function installFrame(){
+  const doc=frameDocument();if(!doc?.head){frameReady=false;status('Cannot access the page preview. Check that you are on the same domain.');return;}
+  frameReady=true;
+  if(!doc.getElementById('blc-visual-edit-style')){
+    const style=doc.createElement('style');style.id='blc-visual-edit-style';style.textContent=`
+      [data-blc-page][data-blc-slot]{cursor:pointer!important;transition:outline-color .15s ease!important}
+      [data-blc-page][data-blc-slot]:hover{outline:3px dashed #f1bd4c!important;outline-offset:-2px!important}
+      .blc-visual-selected{outline:5px solid #f1bd4c!important;outline-offset:-4px!important;position:relative!important}
+      .blc-visual-selected::after{content:'SELECTED SECTION';position:absolute;z-index:2147483647;right:6px;top:6px;background:#f1bd4c;color:#182437;font:700 11px system-ui,sans-serif;padding:5px 9px;border-radius:4px;pointer-events:none}
+      .blc-visual-selected [data-blc-title]{outline:3px dashed #9865db!important;outline-offset:3px!important}
+      .blc-visual-selected [data-blc-caption]{outline:3px dashed #19a6a7!important;outline-offset:3px!important}
+      .blc-visual-selected [data-blc-image]{outline:4px solid #4c9ff0!important;outline-offset:-3px!important}`;
+    doc.head.appendChild(style);
+    doc.addEventListener('click',event=>{
+      event.preventDefault();event.stopImmediatePropagation();
+      const el=event.target?.closest?.('[data-blc-page][data-blc-slot]');
+      if(el&&el.dataset.blcPage===pageKey)selectSection(el.dataset.blcSlot,true);
+    },true);
+    // Prevent accidental typing or form submission inside the real page preview.
+    doc.addEventListener('submit',event=>{event.preventDefault();event.stopImmediatePropagation();},true);
   }
+  sections=getSections();renderSections();
+  if(!sections.length){status('No editable sections found. The page may be missing the CMS script, or the file may not exist.');return;}
+  selectSection(sections.some(s=>s.key===activeKey)?activeKey:sections[0].key,true);
 }
-function highlightSection(scrollTo = true) {
-  const doc = frameDocument();
-  if (!doc) return;
-  doc.querySelectorAll('.blc-visual-selected').forEach(el => el.classList.remove('blc-visual-selected'));
-  const node = selectedNode();
-  if (!node) return;
-  node.classList.add('blc-visual-selected');
-  if (scrollTo) node.scrollIntoView({behavior:'smooth',block:'center'});
-  setEditorFieldAvailability(node);
+function reloadPreview(){
+  if(!$('website-preview').contentWindow)return;
+  unsavedPreview=false;frameReady=false;$('website-preview').contentWindow.location.reload();status('Resetting the preview. No changes have been saved.');
 }
-function selectHomepageSection(key, fromIframe = false) {
-  const section = HOME_SECTIONS.find(item => item.key === key);
-  if (!section) return;
-  if (unsavedPreview && activeKey !== key) reloadPreview();
-  activeKey = key;
-  selected = null;
-  fillEntry(currentRow('home', key));
-  $('page-key').value = 'home';
-  $('slot-key').value = key;
-  $('page-key').readOnly = true; $('slot-key').readOnly = true;
-  $('selection-summary').replaceChildren();
-  const heading = document.createElement('strong'); heading.textContent = section.label;
-  const description = document.createElement('p'); description.textContent = section.description;
-  const state = document.createElement('p');
-  const row = currentRow('home', key);
-  state.textContent = row ? (row.published ? 'Published content exists for this section.' : 'A draft exists for this section. It is not visible publicly.') : 'No custom content saved yet. The website currently uses its original text and imagery.';
-  $('selection-summary').append(heading, description, state);
-  const node = selectedNode();
-  if (node) setEditorFieldAvailability(node);
-  else {
-    // Use known features when iframe has not finished loading yet.
-    $('current-content').hidden = true;
-    const available = key !== 'visit' && key !== 'events' && key !== 'values';
-    $('image-field').hidden = !available;
-    $('alt-field').hidden = !available;
-    $('image-path-field').hidden = !available;
-    $('caption-field').hidden = key === 'visit';
+function formatHeadline(el,raw){
+  if(!raw?.trim())return;
+  const doc=el.ownerDocument;const output=[];
+  raw.split('|').forEach((line,i)=>{if(i)output.push(doc.createElement('br'));for(const part of line.trim().split(/(\*[^*]+\*)/g)){
+    if(!part)continue;if(part.startsWith('*')&&part.endsWith('*')&&part.length>2){const em=doc.createElement('em');em.textContent=part.slice(1,-1);output.push(em);}else output.push(doc.createTextNode(part));
+  }});el.replaceChildren(...output);
+}
+function replaceImage(node,url,alt){
+  if(!node||!url)return;
+  if(node.tagName==='IMG'){node.src=url;if(alt)node.alt=alt;return;}
+  node.dataset.image=url;node.style.backgroundImage=`url(${JSON.stringify(url)})`;
+  node.style.backgroundSize='cover';node.style.backgroundPosition='center';node.style.backgroundRepeat='no-repeat';
+  node.querySelectorAll('video,img,source').forEach(el=>{el.hidden=true;el.style.display='none';if(el.tagName==='VIDEO')el.pause();});
+  node.querySelectorAll('.placeholder-label,.hero-placeholder').forEach(el=>{el.hidden=true;el.style.display='none';});
+  if(alt?.trim()){node.setAttribute('role','img');node.setAttribute('aria-label',alt.trim());}
+}
+function previewChanges(){
+  const node=selectedNode();if(!frameReady||!node){notice('Select a section in a connected page first.');return;}
+  const title=scoped(node,'[data-blc-title]');if(title)formatHeadline(title,$('title').value);
+  const caption=scoped(node,'[data-blc-caption]');if(caption&&$('caption').value.trim()){
+    caption.textContent=$('caption').value;caption.style.whiteSpace='pre-line';
   }
-  renderSections();
-  renderRecords();
-  highlightSection(!fromIframe);
-  if (!unsavedPreview) setPreviewStatus(`Selected: ${section.label}. The gold outline shows which area will change.`);
+  const image=scoped(node,'[data-blc-image]');const file=$('image').files[0];
+  const url=file?imageObjectUrl:imageUrl($('image-path').value);if(image&&url)replaceImage(image,url,$('alt').value);
+  unsavedPreview=true;highlight(false);node.scrollIntoView({behavior:'smooth',block:'center'});
+  status('PREVIEW ONLY: Unsaved changes are visible in this frame, not on the public website.',true);
+  notice('This is an unsaved preview. Nothing has been published.');
 }
-function installPreviewInteractions() {
-  const doc = frameDocument();
-  if (!doc || !doc.head) {
-    frameReady = false;
-    setPreviewStatus('Preview is not accessible. Open this editor from the same domain as the website.');
-    return;
-  }
-  frameReady = true;
-  if (doc.getElementById('blc-visual-edit-style')) return;
-  const style = doc.createElement('style');
-  style.id = 'blc-visual-edit-style';
-  style.textContent = `
-    [data-blc-page="home"][data-blc-slot] {cursor:pointer !important; transition:outline-color .15s ease !important}
-    [data-blc-page="home"][data-blc-slot]:hover {outline:3px dashed #f1bd4c !important;outline-offset:-2px !important}
-    .blc-visual-selected {outline:5px solid #f1bd4c !important;outline-offset:-4px !important;position:relative !important}
-    .blc-visual-selected::after {content:"SELECTED SECTION";position:absolute;z-index:2147483647;right:6px;top:6px;background:#f1bd4c;color:#182437;font:700 11px system-ui,sans-serif;padding:5px 9px;border-radius:4px;pointer-events:none}
-    .blc-visual-selected [data-blc-title] {outline:3px dashed #9865db !important;outline-offset:3px !important}
-    .blc-visual-selected [data-blc-caption] {outline:3px dashed #19a6a7 !important;outline-offset:3px !important}
-    .blc-visual-selected [data-blc-image] {outline:4px solid #4c9ff0 !important;outline-offset:-3px !important}
-  `;
-  doc.head.appendChild(style);
-  doc.addEventListener('click', (event) => {
-    // Preview is for selecting content only, never navigating or submitting forms.
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    const section = event.target?.closest?.('[data-blc-page="home"][data-blc-slot]');
-    if (section) selectHomepageSection(section.dataset.blcSlot, true);
-  }, true);
-  highlightSection(false);
-  if (activeKey) setEditorFieldAvailability(selectedNode());
+async function loadRecords(){records=must(await db.from('blc_page_content').select('*').order('page_key').order('slot_key'));renderRecords();}
+async function loadPageManifest(){
+  try{
+    const response=await fetch('./blc-pages.json',{cache:'no-cache'});if(response.ok){
+      const obj=await response.json();const candidates=Array.isArray(obj?.pages)?obj.pages:[];
+      const safe=candidates.filter(p=>p&&/^[a-z0-9][a-z0-9_-]{0,79}$/.test(p.key)&&/^[a-z0-9][a-z0-9_-]*\.html$/.test(p.file)&&typeof p.label==='string');
+      if(safe.length)pages=safe;
+    }}catch(error){console.warn('Using default page list; no manifest installed.',error);}
+  const picker=$('page-select');picker.replaceChildren();for(const p of pages){const option=document.createElement('option');option.value=p.key;option.textContent=p.label;picker.appendChild(option);}
 }
-function reloadPreview() {
-  unsavedPreview = false;
-  const iframe = $('website-preview');
-  // Same src navigation, not parent page reload: does not save or publish anything.
-  iframe.contentWindow?.location.reload();
-  setPreviewStatus('Resetting preview. No unsaved changes were published.');
+async function init(){
+  if(!db){notice('Supabase configuration is missing. Check membership/config.js.');return;}
+  const {data,error}=await db.auth.getUser();if(error)throw error;authUser=data?.user||null;
+  if(!authUser){$('signin-panel').hidden=false;$('editor-panel').hidden=true;return;}
+  const role=must(await db.from('blc_content_roles').select('role').eq('auth_user_id',authUser.id).maybeSingle());
+  if(!role){$('signin-panel').hidden=false;$('editor-panel').hidden=true;notice('Your login does not have website editing permission.');return;}
+  $('signin-panel').hidden=true;$('editor-panel').hidden=false;$('signed-in').textContent=`${authUser.email} • ${role.role}`;
+  await Promise.all([loadRecords(),loadPageManifest()]);
+  const params=new URLSearchParams(location.search);const requestedPage=params.get('page')||'home';
+  loadPage(pages.some(p=>p.key===requestedPage)?requestedPage:pages[0].key,params.get('slot'));
 }
-function formatHeadline(element, raw) {
-  if (!raw?.trim()) return;
-  const doc = element.ownerDocument;
-  const newNodes = [];
-  raw.split('|').forEach((part,index) => {
-    if (index) newNodes.push(doc.createElement('br'));
-    for (const token of part.trim().split(/(\*[^*]+\*)/g)) {
-      if (!token) continue;
-      if (token.startsWith('*') && token.endsWith('*') && token.length > 2) {
-        const emph = doc.createElement('em'); emph.textContent = token.slice(1,-1); newNodes.push(emph);
-      } else newNodes.push(doc.createTextNode(token));
-    }
-  });
-  element.replaceChildren(...newNodes);
-}
-function replacePreviewImage(node, url, alt) {
-  if (!node || !url) return;
-  if (node.tagName === 'IMG') {node.src = url; node.alt = alt || ''; return;}
-  node.dataset.image = url;
-  node.style.backgroundImage = `url(${JSON.stringify(url)})`;
-  node.style.backgroundSize = 'cover';
-  node.style.backgroundPosition = 'center';
-  node.style.backgroundRepeat = 'no-repeat';
-  node.querySelectorAll('video, img, source').forEach(el => {
-    el.hidden = true; el.style.display = 'none';
-    if (el.tagName === 'VIDEO') el.pause();
-  });
-  node.querySelectorAll('.placeholder-label, .hero-placeholder').forEach(el => {el.hidden = true;el.style.display = 'none';});
-  if (alt?.trim()) {node.setAttribute('role','img');node.setAttribute('aria-label',alt.trim());}
-}
-function previewChanges() {
-  const node = selectedNode();
-  if (!frameReady || !node) {
-    notice('Select a homepage section first. The interactive preview only works on the same website domain.');
-    return;
-  }
-  const title = node.querySelector('[data-blc-title]');
-  if (title) formatHeadline(title,$('title').value);
-  const caption = node.querySelector('[data-blc-caption]');
-  if (caption && $('caption').value.trim()) {
-    caption.textContent = $('caption').value;
-    caption.style.whiteSpace = 'pre-line';
-  }
-  const image = node.querySelector('[data-blc-image]');
-  const file = $('image').files[0];
-  const newUrl = file ? imageObjectUrl : getPublicImageUrl($('image-path').value);
-  if (image && newUrl) replacePreviewImage(image,newUrl,$('alt').value);
-  unsavedPreview = true;
-  highlightSection(false);
-  node.scrollIntoView({behavior:'smooth',block:'center'});
-  setPreviewStatus('PREVIEW ONLY — these changes are not saved or published. Click Save content when ready.',true);
-  notice('You are viewing an unsaved preview. Your public website has not changed.');
-}
-async function loadRecords() {
-  records = must(await db.from('blc_page_content').select('*').order('page_key').order('slot_key'));
-  renderRecords();
-}
-async function init() {
-  if (!db) { notice('Supabase configuration is missing. Check config.js and the Supabase browser library.');return; }
-  const {data,error} = await db.auth.getUser();
-  if (error) throw error;
-  authUser = data?.user || null;
-  if (!authUser) {$('signin-panel').hidden = false;$('editor-panel').hidden = true;return;}
-  const role = must(await db.from('blc_content_roles').select('role').eq('auth_user_id',authUser.id).maybeSingle());
-  if (!role) {$('signin-panel').hidden = false;$('editor-panel').hidden = true;notice('This login does not have website content editing permission.');return;}
-  $('signin-panel').hidden = true;$('editor-panel').hidden = false;
-  $('signed-in').textContent = `${authUser.email} • ${role.role}`;
-  await loadRecords();
-  const requestedSlot = new URLSearchParams(location.search).get('slot');
-  selectHomepageSection(HOME_SECTIONS.some(item => item.key === requestedSlot) ? requestedSlot : 'hero');
-}
-$('signin').addEventListener('submit',async event=>{
-  event.preventDefault();
-  try {must(await db.auth.signInWithPassword({email:$('email').value,password:$('password').value}));notice('Signed in.');await init();}
-  catch (error) {notice(error.message);}
-});
+$('signin').addEventListener('submit',async event=>{event.preventDefault();try{must(await db.auth.signInWithPassword({email:$('email').value,password:$('password').value}));notice('Signed in.');await init();}catch(error){notice(error.message);}});
 $('logout').addEventListener('click',async()=>{await db.auth.signOut();location.reload();});
+$('page-select').addEventListener('change',value=>loadPage(value.target.value));
 $('filter').addEventListener('input',renderRecords);
-$('reload').addEventListener('click',()=>loadRecords().catch(error=>notice(error.message)));
-$('new').addEventListener('click',()=>{
-  if (unsavedPreview) reloadPreview();
-  activeKey=null;selected=null;fillEntry(null);
-  $('page-key').value='';$('slot-key').value='';
-  $('page-key').readOnly=false;$('slot-key').readOnly=false;
-  for (const id of ['title-field','caption-field','image-field','alt-field','image-path-field','title-hint']) $(id).hidden = false;
-  $('current-content').hidden = true;
-  $('selection-summary').replaceChildren();
-  const title=document.createElement('strong');title.textContent='New manual content slot';
-  const desc=document.createElement('p');desc.textContent='For advanced use on pages with data-blc slot markers. Select a homepage section to return to visual editing.';
-  $('selection-summary').append(title,desc);
-  renderSections();
-  highlightSection(false);
-  setPreviewStatus('Manual entry mode: homepage selection is paused.');
-});
-$('desktop-size').addEventListener('click',()=>{
-  $('preview-shell').classList.remove('mobile');
-  $('desktop-size').classList.add('view-active');$('mobile-size').classList.remove('view-active');
-  $('desktop-size').setAttribute('aria-pressed','true');$('mobile-size').setAttribute('aria-pressed','false');
-});
-$('mobile-size').addEventListener('click',()=>{
-  $('preview-shell').classList.add('mobile');
-  $('mobile-size').classList.add('view-active');$('desktop-size').classList.remove('view-active');
-  $('mobile-size').setAttribute('aria-pressed','true');$('desktop-size').setAttribute('aria-pressed','false');
-});
+$('reload').addEventListener('click',()=>loadRecords().catch(e=>notice(e.message)));
+$('desktop-size').addEventListener('click',()=>{$('preview-shell').classList.remove('mobile');$('desktop-size').classList.add('view-active');$('mobile-size').classList.remove('view-active');});
+$('mobile-size').addEventListener('click',()=>{$('preview-shell').classList.add('mobile');$('mobile-size').classList.add('view-active');$('desktop-size').classList.remove('view-active');});
 $('reload-preview').addEventListener('click',reloadPreview);
-$('website-preview').addEventListener('load', installPreviewInteractions);
-if ($('website-preview').contentDocument?.readyState === 'complete') installPreviewInteractions();
+$('website-preview').addEventListener('load',installFrame);
 $('preview-changes').addEventListener('click',previewChanges);
-$('image').addEventListener('change',()=>{
-  clearObjectUrl();
-  const file=$('image').files[0];
-  if (file && file.type.startsWith('image/')) {
-    imageObjectUrl=URL.createObjectURL(file);
-    $('preview').src=imageObjectUrl;
-    $('preview').hidden=false;
-  } else imageThumbnail($('image-path').value);
-});
+$('image').addEventListener('change',()=>{clearImage();const file=$('image').files[0];if(file&&file.type.startsWith('image/')){imageObjectUrl=URL.createObjectURL(file);$('preview').src=imageObjectUrl;$('preview').hidden=false;}else imageThumb($('image-path').value);});
 $('content-form').addEventListener('submit',async event=>{
-  event.preventDefault();
-  try {
-    if (!authUser) throw Error('You must sign in before editing website content.');
-    const page=$('page-key').value.trim(),slot=$('slot-key').value.trim();
-    if (!/^[a-z0-9][a-z0-9_-]{0,79}$/.test(page)||!/^[a-z0-9][a-z0-9_-]{0,79}$/.test(slot)) throw Error('Page and slot keys must be lowercase letters, numbers, hyphens, or underscores.');
-    let path = $('image-path').value || null;
+  event.preventDefault();try{
+    if(!authUser||!selectedNode())throw Error('Choose an editable section of the website before saving.');
+    const page=pageKey,slot=activeKey;
+    let path=$('image-path').value||null;
     const file=$('image').files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) throw Error('Image must be 5 MB or smaller.');
-      const typeToExt={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif'};
-      const ext=typeToExt[file.type];
-      if (!ext) throw Error('Only JPEG, PNG, WebP, and GIF images are supported.');
+    if(file){
+      if(file.size>5*1024*1024)throw Error('Image must be 5 MB or smaller.');
+      const types={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif'};
+      const ext=types[file.type];if(!ext)throw Error('Only JPEG, PNG, WebP and GIF images are supported.');
       path=`${page}/${slot}/${crypto.randomUUID()}.${ext}`;
       must(await db.storage.from('blc-site-images').upload(path,file,{contentType:file.type,upsert:false}));
     }
     const row={page_key:page,slot_key:slot,title:$('title').value,caption:$('caption').value,image_alt:$('alt').value,image_path:path,published:$('published').checked,updated_by:authUser.id,updated_at:new Date().toISOString()};
     must(await db.from('blc_page_content').upsert(row,{onConflict:'page_key,slot_key'}));
-    $('image').value='';
-    clearObjectUrl();
-    unsavedPreview=false;
-    await loadRecords();
-    if (page==='home' && HOME_SECTIONS.some(section=>section.key===slot)) selectHomepageSection(slot);
-    else fillEntry(currentRow(page,slot));
-    reloadPreview();
-    notice(row.published ? 'Saved and published. Refresh the public website to verify the change.' : 'Draft saved. The public website has not changed.');
-  } catch (error) { notice('Save failed: '+error.message); }
+    clearImage();$('image').value='';unsavedPreview=false;
+    await loadRecords();reloadPreview();
+    notice(row.published?'Saved and published. Refresh the public website to verify.':'Draft saved. The public website has not changed.');
+  }catch(error){notice('Save failed: '+error.message);}
 });
 init().catch(error=>notice(error.message));

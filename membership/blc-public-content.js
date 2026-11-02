@@ -37,6 +37,12 @@
     element.replaceChildren(...newNodes);
   }
 
+  function scoped(container, selector) {
+    if (container.matches?.(selector)) return container;
+    return [...container.querySelectorAll(selector)]
+      .find(node => node.closest('[data-blc-slot]') === container) || null;
+  }
+
   function updateImage(container, path, alt) {
     if (!path) return;
     const result = db.storage.from('blc-site-images').getPublicUrl(path);
@@ -96,14 +102,14 @@
       for (const element of slots.filter(el => el.dataset.blcPage === page)) {
         const record = bySlot.get(element.dataset.blcSlot);
         if (!record) continue;  // Retain existing design and text until published.
-        const headline = element.querySelector('[data-blc-title]');
+        const headline = scoped(element, '[data-blc-title]');
         if (headline) updateHeadline(headline, record.title);
-        const caption = element.querySelector('[data-blc-caption]');
+        const caption = scoped(element, '[data-blc-caption]');
         if (caption && typeof record.caption === 'string' && record.caption.trim()) {
           caption.textContent = record.caption;
           if (record.caption.includes('\n')) caption.style.whiteSpace = 'pre-line';
         }
-        const image = element.querySelector('[data-blc-image]');
+        const image = scoped(element, '[data-blc-image]');
         if (image && record.image_path) updateImage(image, record.image_path, record.image_alt);
       }
     }

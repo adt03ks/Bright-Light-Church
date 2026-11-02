@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101f30">
+  <title>Events & Birthdays Admin | Bright Light Church</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="calendar-admin.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="../index.html" aria-label="Bright Light Church home"><span class="brand-icon">✦</span><span><strong>BRIGHT LIGHT CHURCH</strong><small>A LIGHT TO THE WORLD · ANAHUAC</small></span></a>
+      <nav class="toplinks" aria-label="Admin navigation">
+        <a href="portal.html">My Portal</a>
+        <a href="../events.html" target="_blank" rel="noopener noreferrer">Public Calendar ↗</a>
+        <button id="sign-out" class="text-button" type="button" hidden>Sign Out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container main">
+    <div class="intro">
+      <div><p class="eyebrow">CHURCH ADMINISTRATION / COMMUNICATIONS</p><h1>Events & Birthdays</h1><p>Publish church activities and manage member birthday announcements from one secure dashboard.</p></div>
+      <span class="status-tag">Bright Light Church · Calendar</span>
+    </div>
+    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+
+    <section id="login-panel" class="panel login-panel" hidden>
+      <h2>Staff Sign In</h2><p>Use your existing Bright Light Church membership administrator login.</p>
+      <form id="login-form" autocomplete="on">
+        <label>Email <input id="login-email" type="email" autocomplete="username" required></label>
+        <label>Password <input id="login-password" type="password" autocomplete="current-password" required></label>
+        <button class="btn primary" type="submit">Sign In</button>
+      </form>
+    </section>
+    <div id="loading" class="loading">Checking your account and loading calendar information…</div>
+
+    <div id="workspace" hidden>
+      <div class="session-row"><span id="account-info"></span><span class="private-note">Private staff dashboard · Not visible to website visitors</span></div>
+      <div class="stats" aria-label="Calendar summary">
+        <div class="stat"><span>Upcoming published events</span><strong id="stat-published">—</strong><small>Events dated today or later</small></div>
+        <div class="stat"><span>Unpublished drafts</span><strong id="stat-drafts">—</strong><small>Only visible to staff</small></div>
+        <div class="stat"><span>Public birthdays · next 30 days</span><strong id="stat-birthdays">—</strong><small>Adult members with permission</small></div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Calendar management">
+        <button id="tab-events" role="tab" aria-controls="panel-events" aria-selected="true" type="button">Church Events</button>
+        <button id="tab-birthdays" role="tab" aria-controls="panel-birthdays" aria-selected="false" type="button">Member Birthdays</button>
+      </div>
+
+      <section id="panel-events" role="tabpanel" aria-labelledby="tab-events">
+        <div class="columns">
+          <section class="panel" aria-labelledby="event-editor-title">
+            <div class="panel-heading"><div><span class="section-label">EVENT EDITOR</span><h2 id="event-editor-title">Add Church Event</h2></div><span id="edit-indicator" class="draft-label" hidden>Editing existing event</span></div>
+            <form id="event-form">
+              <input type="hidden" id="event-id">
+              <label>Event name <input id="event-title" maxlength="160" placeholder="Annual Church Anniversary" required></label>
+              <div class="field-grid">
+                <label>Event date <input id="event-date" type="date" required></label>
+                <label>Starts at (optional) <input id="event-start" type="time"></label>
+                <label>Ends at (optional) <input id="event-end" type="time"></label>
+                <label>Location (optional) <input id="event-location" maxlength="200" placeholder="Main Sanctuary"></label>
+              </div>
+              <label>Event description <textarea id="event-description" rows="4" maxlength="2400" placeholder="What should visitors know about this gathering?"></textarea></label>
+              <label>Event link (optional, HTTPS only) <input id="event-url" type="url" placeholder="https://brightlightchurch.org/events.html"></label>
+              <label class="checkline"><input id="event-published" type="checkbox"><span><strong>Publish on public Events calendar</strong><small>Leave unchecked to save privately as a draft.</small></span></label>
+              <div class="form-actions"><button class="btn primary" type="submit" id="save-event">Save Event</button><button class="btn secondary" type="button" id="clear-event">Clear / New Event</button></div>
+            </form>
+          </section>
+
+          <section class="panel" aria-labelledby="event-list-title">
+            <div class="panel-heading"><div><span class="section-label">CALENDAR ENTRIES</span><h2 id="event-list-title">Saved Events</h2></div><button type="button" class="btn secondary small" id="refresh-events">Refresh</button></div>
+            <div class="field-grid">
+              <label>Search <input id="event-search" type="search" placeholder="Search event or location"></label>
+              <label>Show <select id="event-filter"><option value="upcoming">Upcoming events</option><option value="drafts">Drafts</option><option value="all">All events</option><option value="past">Past events</option></select></label>
+            </div>
+            <div id="event-count" class="count"></div>
+            <div id="event-list" class="event-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="panel-birthdays" role="tabpanel" aria-labelledby="tab-birthdays" hidden>
+        <div class="columns birthday-columns">
+          <section class="panel">
+            <span class="section-label">BIRTHDAY PUBLICATION</span><h2>Member Birthday Permissions</h2>
+            <div class="privacy-note"><strong>Protecting member privacy:</strong> Only active adult members (18+) with an actual date of birth and confirmed permission can appear publicly. No minors, birth years, ages, home addresses, or contact information are published.</div>
+            <label>Find a member <input id="member-search" type="search" placeholder="Search by member's name"></label>
+            <div class="filter-row"><label class="inline-select">Display <select id="birthday-filter"><option value="all">All members</option><option value="approved">Public birthdays approved</option><option value="not-approved">Not yet approved</option><option value="ineligible">Minor / missing DOB / inactive</option></select></label></div>
+            <p id="member-count" class="count"></p>
+            <div id="member-list" class="member-list"></div>
+          </section>
+          <aside class="panel" aria-labelledby="birthday-preview-title">
+            <span class="section-label">WHAT VISITORS CAN SEE</span><h2 id="birthday-preview-title">Next 30 Days</h2>
+            <p class="help">This preview comes from the same public-safe Supabase function used by the church website. It includes approved names and month/day only.</p>
+            <button id="refresh-birthdays" type="button" class="btn secondary small">Refresh Birthday Feed</button>
+            <div id="upcoming-birthdays" class="upcoming-birthdays"></div>
+          </aside>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer class="footer">Bright Light Church · 513 FM 2041 · Anahuac, Texas</footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="calendar-admin.js" defer></script>
+</body>
+</html>

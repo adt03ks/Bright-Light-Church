@@ -1,0 +1,59 @@
+/* Bright Light Church public events calendar. Scoped so it won't override site styles. */
+.blc-calendar-section{padding:clamp(42px,6vw,88px) 0;background:#f5f7f9;color:#192b3d}
+.blc-events-app,.blc-events-app *{box-sizing:border-box}
+.blc-events-app{font-family:'DM Sans',Arial,sans-serif;color:#192b3d;max-width:1180px;margin:0 auto}
+.blc-calendar-heading{display:flex;justify-content:space-between;gap:22px;align-items:end;flex-wrap:wrap;margin-bottom:24px}
+.blc-calendar-eyebrow{text-transform:uppercase;letter-spacing:.18em;font-weight:800;font-size:11px;color:#98722e;margin:0 0 8px}
+.blc-calendar-heading h2{font-family:'Playfair Display',Georgia,serif;font-size:clamp(26px,3vw,39px);line-height:1.2;color:#11283f;margin:0 0 10px}
+.blc-calendar-heading p{color:#5c6b79;max-width:570px;margin:0;line-height:1.65}
+.blc-calendar-legend{display:flex;gap:16px;align-items:center;flex-wrap:wrap;color:#546475;font-size:13px}
+.blc-legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:#b18843}
+.blc-legend-dot.birthday{background:#bf637e}
+.blc-calendar-grid{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(280px,1fr);gap:20px;align-items:start}
+.blc-calendar-panel,.blc-upcoming-panel{background:#fff;border:1px solid #e4e9ee;border-radius:18px;box-shadow:0 16px 38px rgba(10,30,50,.06);overflow:hidden}
+.blc-month-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 20px;border-bottom:1px solid #edf0f3}
+.blc-month-toolbar h3{font-size:19px;color:#132b42;margin:0;font-weight:800}
+.blc-month-nav{display:flex;align-items:center;gap:7px}
+.blc-month-nav button,.blc-calendar-day{font:inherit}
+.blc-month-nav button{border:1px solid #e2e7ec;background:#fff;color:#1e3448;border-radius:9px;padding:9px 12px;cursor:pointer;font-size:13px;font-weight:700}
+.blc-month-nav button:hover,.blc-month-nav button:focus-visible{border-color:#b59151;outline:2px solid transparent;background:#f9f3e8}
+.blc-weekdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));padding:10px 10px 0}
+.blc-weekdays span{text-align:center;color:#6b7a87;font-size:11px;font-weight:800;padding:8px 1px}
+.blc-calendar-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;padding:0 10px 12px}
+.blc-calendar-day{min-height:77px;border:1px solid transparent;border-radius:11px;background:#f8fafb;text-align:left;padding:8px;cursor:pointer;position:relative;color:#243a4f}
+.blc-calendar-day:hover,.blc-calendar-day:focus-visible{border-color:#bc9959;outline:0;background:#fffdf8}
+.blc-calendar-day.is-outside{color:#a2adb6;background:#fbfcfd}
+.blc-calendar-day.is-selected{border:2px solid #ad8742;background:#fffaf0;padding:7px}
+.blc-calendar-day.is-today .blc-day-number{background:#19364d;color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px}
+.blc-day-number{font-size:12px;font-weight:700}
+.blc-day-dots{display:flex;gap:4px;flex-wrap:wrap;margin-top:10px}
+.blc-day-dot{width:8px;height:8px;border-radius:50%;background:#b18843}
+.blc-day-dot.birthday{background:#bf637e}
+.blc-day-title{display:block;font-size:10px;font-weight:650;line-height:1.3;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blc-day-detail{border-top:1px solid #edf0f3;padding:19px 20px;background:#fbfcfd}
+.blc-day-detail h4{font-size:15px;color:#172b3f;margin:0 0 10px}
+.blc-event-detail{padding:11px 0;border-bottom:1px solid #e7ebef}
+.blc-event-detail:last-child{border:0;padding-bottom:0}
+.blc-event-detail strong{font-size:14px}
+.blc-event-detail p{margin:4px 0;color:#657586;font-size:13px;line-height:1.5}
+.blc-event-detail a{color:#77551c;font-weight:700}
+.blc-event-type{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#a07833}
+.blc-event-type.birthday{color:#ad4d6d}
+.blc-upcoming-panel{padding:22px}
+.blc-upcoming-head{display:flex;align-items:center;gap:10px;margin-bottom:5px}
+.blc-upcoming-head h3{margin:0;font-size:20px;color:#142d43;font-weight:800}
+.blc-upcoming-head svg{width:20px;height:20px;fill:none;stroke:#bb6580;stroke-width:2}
+.blc-upcoming-panel .blc-subtitle{margin:0 0 20px;color:#66798a;font-size:13px;line-height:1.5}
+.blc-birthday-list{display:flex;flex-direction:column;gap:10px}
+.blc-birthday-item{display:flex;align-items:center;gap:12px;padding:12px 11px;background:#fff9fb;border:1px solid #f7e3eb;border-radius:12px}
+.blc-birthday-date{background:#fff;border:1px solid #f2d5df;border-radius:10px;min-width:52px;text-align:center;padding:7px 8px;line-height:1.25}
+.blc-birthday-date strong{display:block;font-size:19px;color:#8d3657}
+.blc-birthday-date small{font-size:10px;font-weight:800;text-transform:uppercase;color:#a45372}
+.blc-birthday-name{font-size:14px;color:#193348;font-weight:800}
+.blc-birthday-note{color:#7b8592;font-size:12px;margin-top:3px}
+.blc-calendar-empty{color:#68798a;font-size:13px;padding:14px 0;line-height:1.55}
+.blc-events-status{font-size:12px;color:#637787;margin:10px 0 0;min-height:18px}
+.blc-calendar-error{color:#8c2f43;background:#fff1f4;border:1px solid #f6d3dc;border-radius:9px;padding:12px;font-size:13px}
+.blc-calendar-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media(max-width:800px){.blc-calendar-grid{grid-template-columns:1fr}.blc-upcoming-panel{padding:18px}}
+@media(max-width:500px){.blc-calendar-days{gap:2px;padding:0 5px 8px}.blc-calendar-day{min-height:57px;padding:5px 3px}.blc-calendar-day.is-selected{padding:4px 2px}.blc-day-title{display:none}.blc-day-dots{margin-top:7px}.blc-month-toolbar{padding:14px 10px}.blc-month-nav button{padding:7px 9px}.blc-month-toolbar h3{font-size:16px}.blc-calendar-heading h2{font-size:27px}}

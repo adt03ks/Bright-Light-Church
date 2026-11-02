@@ -1,8 +1,65 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bright Light Church | Content Manager</title><link rel="stylesheet" href="content-manager.css"></head><body>
-<header><strong>BRIGHT LIGHT CHURCH</strong><span>Website Content Manager</span><nav><a href="admin.html">Member Administration</a> <a href="../index.html">Website</a></nav></header>
-<main><h1>Edit website pictures &amp; captions</h1><p class="muted">Use a page key and slot key matching the content area you installed on your website. Publishing makes content visible to visitors.</p><p id="notice" role="status"></p>
-<section id="signin-panel"><h2>Sign in</h2><form id="signin"><label>Email <input id="email" type="email" autocomplete="username" required></label><label>Password <input id="password" type="password" autocomplete="current-password" required></label><button>Sign in</button></form></section>
-<section id="editor-panel" hidden><div class="top"><strong id="signed-in"></strong><button id="logout" type="button">Sign out</button></div>
-<div class="grid"><section class="panel"><h2>Content entries</h2><label>Filter by page <input id="filter" placeholder="e.g. home"></label><button id="reload" type="button">Refresh entries</button><div id="entries"></div></section>
-<section class="panel"><h2>Content editor</h2><form id="content-form"><label>Page key <input name="page_key" id="page-key" required pattern="[a-z0-9][a-z0-9_-]*" placeholder="home"></label><label>Slot key <input name="slot_key" id="slot-key" required pattern="[a-z0-9][a-z0-9_-]*" placeholder="hero"></label><label>Headline <input name="title" id="title" maxlength="250"></label><label>Caption <textarea name="caption" id="caption" maxlength="2500" rows="5"></textarea></label><label>Image alt text (accessibility) <input name="image_alt" id="alt" maxlength="250"></label><label>Upload replacement image (JPEG, PNG, WebP, GIF; max 5 MB) <input id="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label><label>Existing image path <input id="image-path" readonly placeholder="No image uploaded"></label><img id="preview" alt="Selected image preview" hidden><label class="checkbox"><input id="published" type="checkbox"> Published (visible on public website)</label><button type="submit">Save content</button><button id="new" type="button" class="outline">New content slot</button></form></section></div></section></main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script><script src="config.js"></script><script src="content-admin.js" defer></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102137">
+  <title>Visual Website Editor | Bright Light Church</title>
+  <link rel="stylesheet" href="content-manager.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="../index.html"><span class="brand-icon" aria-hidden="true">✦</span><span><strong>BRIGHT LIGHT CHURCH</strong><small>VISUAL CONTENT MANAGER</small></span></a>
+  <nav><a href="admin.html">Member Administration</a><a href="../index.html" target="_blank" rel="noopener">Open Website ↗</a></nav>
+</header>
+<main>
+  <div class="page-intro"><div><p class="eyebrow">Website administration</p><h1>Point, click &amp; edit your website</h1><p class="muted">See the actual homepage, click the section you want, preview your changes, then save when you're ready.</p></div><div class="status-pill"><span class="status-dot"></span> Your live website is unchanged until you publish</div></div>
+  <p id="notice" role="status" aria-live="polite"></p>
+  <section id="signin-panel" class="signin-panel">
+    <h2>Authorized editors only</h2><p class="muted">Use the same Supabase account you use for the Bright Light Church Content Manager.</p>
+    <form id="signin"><label>Email <input id="email" type="email" autocomplete="username" required></label><label>Password <input id="password" type="password" autocomplete="current-password" required></label><button class="primary">Sign in</button></form>
+  </section>
+  <section id="editor-panel" hidden>
+    <div class="sessionbar"><span id="signed-in"></span><button id="logout" class="text-button" type="button">Sign out</button></div>
+    <div class="workspace">
+      <aside class="panel sections-panel" aria-label="Homepage sections">
+        <div class="panel-heading"><div><p class="eyebrow">STEP 1</p><h2>Choose a section</h2></div><span class="number-mark">10</span></div>
+        <p class="hint">Click a section below, or click it directly in the website preview.</p>
+        <div id="section-list" class="section-list"></div>
+        <div class="advanced"><details><summary>Advanced: existing content entries</summary><label for="filter">Filter page key</label><input id="filter" placeholder="e.g. home"><button id="reload" class="secondary" type="button">Refresh entries</button><div id="entries"></div><button id="new" type="button" class="secondary">Add manual content slot</button></details></div>
+      </aside>
+      <section class="panel preview-panel" aria-label="Website visual preview">
+        <div class="panel-heading"><div><p class="eyebrow">STEP 2</p><h2>See what you're editing</h2></div><a class="open-link" href="../index.html" target="_blank" rel="noopener">Open full page ↗</a></div>
+        <div class="preview-toolbar"><div class="viewport-options" role="group" aria-label="Preview size"><button id="desktop-size" class="view-active" type="button" aria-pressed="true">Desktop</button><button id="mobile-size" type="button" aria-pressed="false">Mobile</button></div><button class="secondary" id="reload-preview" type="button">Reset preview</button></div>
+        <div class="preview-legend"><span><i class="legend-section"></i> Selected section</span><span><i class="legend-title"></i> Headline</span><span><i class="legend-caption"></i> Caption</span><span><i class="legend-image"></i> Photo</span></div>
+        <div class="preview-shell" id="preview-shell"><iframe id="website-preview" title="Clickable preview of the Bright Light Church homepage" src="../index.html?blc_visual_editor=1"></iframe></div>
+        <div id="preview-status" class="preview-status" role="status">Click any highlighted section in the preview to edit it.</div>
+        <p class="preview-note">This is a preview inside the church website—not the editing form. Links inside the preview are disabled so you can select sections safely.</p>
+      </section>
+      <section class="panel edit-panel" aria-label="Edit selected section">
+        <div class="panel-heading"><div><p class="eyebrow">STEP 3</p><h2>Edit &amp; preview</h2></div><span class="edit-icon" aria-hidden="true">✎</span></div>
+        <div id="selection-summary" class="selection-summary"><strong>Select a website section</strong><p>Choose from the left or click the page preview. We'll automatically select the matching editing fields.</p></div>
+        <div id="current-content" class="current-content" hidden><p class="current-label">CURRENT WEBSITE CONTENT</p><div id="current-title"></div><div id="current-caption"></div></div>
+        <form id="content-form">
+          <div class="keys"><label>Page key <input name="page_key" id="page-key" required pattern="[a-z0-9][a-z0-9_-]*" placeholder="home" readonly></label><label>Slot key <input name="slot_key" id="slot-key" required pattern="[a-z0-9][a-z0-9_-]*" placeholder="hero" readonly></label></div>
+          <label id="title-field">Headline <span class="field-detail">purple outline in preview</span><input name="title" id="title" maxlength="250" placeholder="Leave blank to use original wording"></label>
+          <p class="hint formatting-hint" id="title-hint">Use <code>|</code> for a line break and <code>*words*</code> for italic emphasis.</p>
+          <label id="caption-field">Caption <span class="field-detail">teal outline in preview</span><textarea name="caption" id="caption" maxlength="2500" rows="4" placeholder="Leave blank to use original wording"></textarea></label>
+          <label id="image-field">Replace photo <span class="field-detail">blue outline in preview</span><input id="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><small>JPEG, PNG, WebP, or GIF, up to 5 MB.</small></label>
+          <label id="alt-field">Image description for accessibility <input name="image_alt" id="alt" maxlength="250" placeholder="Describe what is in the photo"></label>
+          <label class="existing-image-field" id="image-path-field">Uploaded image path <input id="image-path" readonly placeholder="No uploaded image"></label>
+          <img id="preview" alt="Uploaded image preview" hidden>
+          <div class="publication"><label class="checkbox"><input id="published" type="checkbox"> <span><strong>Published</strong><small>Checking this and saving changes the public website.</small></span></label></div>
+          <button type="button" id="preview-changes" class="secondary full">Preview changes — don't save</button>
+          <button type="submit" id="save-content" class="primary full">Save content</button>
+          <p class="hint">Preview Changes is temporary. Save content with Published unchecked to keep it as a draft.</p>
+        </form>
+      </section>
+    </div>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="content-admin.js" defer></script>
+</body>
+</html>

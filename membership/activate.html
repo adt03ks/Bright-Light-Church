@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Activate Account | Bright Light Church</title>
+  <style>
+    :root{color-scheme:light;font-family:Arial,Helvetica,sans-serif;background:#eef1f6;color:#102c54}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px}
+    main{width:min(100%,520px);border-radius:15px;overflow:hidden;background:#fff;box-shadow:0 12px 40px #12213b22}
+    header{background:#102c54;text-align:center;color:#e3c686;padding:38px 20px 30px}
+    header .cross{font-size:29px}h1{font-size:24px;letter-spacing:1px;margin:14px 0 5px}header p{letter-spacing:2px;color:#fff;font-size:11px;margin:0}
+    section{padding:32px 28px}h2{margin:0 0 13px;font-size:22px}p{line-height:1.6}label{display:block;font-size:14px;font-weight:700;margin:18px 0 8px}
+    input{width:100%;border:1px solid #a7b3c6;border-radius:7px;padding:13px;font-size:16px}
+    button{display:block;margin-top:22px;background:#173c71;color:white;padding:14px;border:none;border-radius:7px;width:100%;font-size:15px;font-weight:700;cursor:pointer}button:disabled{opacity:.55;cursor:wait}
+    a{color:#173c71}small{color:#64738b}#status{padding:12px;border-radius:7px;background:#eef3fa;margin-bottom:18px;font-size:14px}#status.error{background:#ffeded;color:#8e2424}#status.success{background:#e8f7ec;color:#185e30}#passwordForm[hidden],#complete[hidden]{display:none}
+  </style>
+</head>
+<body>
+<main>
+  <header><div class="cross" aria-hidden="true">✝</div><h1>BRIGHT LIGHT CHURCH</h1><p>ACCOUNT ACTIVATION</p></header>
+  <section>
+    <h2>Set up your account</h2>
+    <p>Use your invitation to securely choose a password for your Bright Light Church account.</p>
+    <div id="status" role="status" aria-live="polite">Verifying your invitation…</div>
+    <form id="passwordForm" hidden>
+      <p id="accountLabel"></p>
+      <label for="password">Create password</label>
+      <input id="password" type="password" minlength="12" autocomplete="new-password" required placeholder="At least 12 characters">
+      <label for="confirmPassword">Confirm password</label>
+      <input id="confirmPassword" type="password" minlength="12" autocomplete="new-password" required>
+      <small>Use a unique password with at least 12 characters. Never share it with another administrator.</small>
+      <button type="submit" id="saveButton">Activate My Account</button>
+    </form>
+    <div id="complete" hidden>
+      <p>Your password has been created successfully. You can now sign in using your email address and new password.</p>
+      <a href="admin.html">Go to Administrator Sign In</a>
+    </div>
+    <p><small>Invitation expired or not working? Contact the church administrator to request a fresh invitation. Do not forward invitation links.</small></p>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="activate.js"></script>
+</body></html>

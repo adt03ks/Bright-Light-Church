@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Bright Light Church | Cash Fundraiser Receipts</title>
+<style>
+:root{font-family:system-ui,Segoe UI,Arial,sans-serif;color:#183353;background:#f5f7fb}*{box-sizing:border-box}body{margin:0}header{padding:24px 18px;background:linear-gradient(105deg,#071a3b,#17447e);color:white;border-bottom:5px solid #dcb46a}header h1{font:normal 30px Georgia,serif;margin:0}header p{margin:8px 0 0;color:#e0e8f1}main{max-width:1040px;margin:24px auto;padding:0 16px}.card{background:#fff;border:1px solid #dde4ed;border-radius:14px;padding:23px;margin:17px 0;box-shadow:0 6px 18px #0b28540a}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field label{display:block;font-size:13px;font-weight:700;margin:0 0 5px}.field input,.field textarea{width:100%;padding:11px;border:1px solid #b9c9da;border-radius:8px;font:inherit}.field textarea{min-height:70px}.span{grid-column:1/-1}button,.linkbtn{border:0;border-radius:8px;background:#123a75;color:#fff;font:600 14px system-ui;cursor:pointer;padding:12px 16px;text-decoration:none;display:inline-block}button.secondary,.linkbtn.secondary{background:#eef2f8;color:#193252}button:disabled{opacity:.6;cursor:wait}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.muted{color:#61738a;font-size:13px}.hidden{display:none!important}.status{font-weight:700;margin-top:12px}.stats{display:flex;gap:15px;flex-wrap:wrap}.stat{background:#eff3f8;padding:13px 18px;border-radius:10px}.stat strong{display:block;font-size:25px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:700px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #e4e9f0;font-size:13px}th{font-size:11px;color:#5e6e80;text-transform:uppercase}footer{text-align:center;color:#61738a;padding:22px;font-size:12px}@media(max-width:650px){.grid{grid-template-columns:1fr}}
+</style>
+<script src="cash-config.js"></script>
+<script type="module" src="cash.js"></script>
+</head><body>
+<header><div style="max-width:1040px;margin:auto"><h1>Bright Light Church · Fundraiser Cash Ledger</h1><p>Record actual cash donations collected separately from Givelify payments</p></div></header>
+<main>
+<section class="card" id="loginCard"><h2>Authorized Administrator Sign In</h2><form id="loginForm"><div class="grid"><div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required></div><div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div></div><button style="margin-top:18px" type="submit">Sign In</button></form></section>
+<div id="app" class="hidden"><div class="row"><strong id="signedIn"></strong><a class="linkbtn secondary" href="admin.html">Donation Ledger</a><button id="refresh" class="secondary">Refresh</button><button id="export" class="secondary">Export CSV</button><button id="logout" class="secondary">Sign Out</button></div>
+<section class="card"><h2>Record Cash Received</h2><p class="muted">Use this only after cash has physically been received. Cash is not a verified online payment, and a donation does not itself represent a raffle ticket.</p>
+<form id="cashForm" class="grid">
+<div class="field"><label for="contributor">Contributor name *</label><input id="contributor" required maxlength="150" autocomplete="off" placeholder="Full name"></div>
+<div class="field"><label for="amount">Cash received ($) *</label><input id="amount" type="number" inputmode="decimal" required min="0.01" max="100000" step="0.01" placeholder="25.00"></div>
+<div class="field"><label for="date">Date received *</label><input id="date" type="date" required></div>
+<div class="field"><label for="collector">Received by *</label><input id="collector" required maxlength="150" placeholder="Church staff member"></div>
+<div class="field"><label for="pledge">Pledge / registration reference (optional)</label><input id="pledge" maxlength="100" placeholder="Link to an existing pledge"></div>
+<div class="field"><label for="receipt">Cash receipt number (optional; unique)</label><input id="receipt" maxlength="100" placeholder="Receipt ID from church log"></div>
+<div class="field span"><label for="notes">Notes (optional)</label><textarea id="notes" maxlength="1000" placeholder="Cash collection event, envelope, etc."></textarea></div>
+<div class="span"><button id="save" type="submit">Save Cash Receipt</button></div>
+</form></section>
+<section class="card"><h2>Cash Received Summary</h2><div class="stats"><div class="stat"><span class="muted">Cash records</span><strong id="count">0</strong></div><div class="stat"><span class="muted">Cash received total</span><strong id="total">$0.00</strong></div></div><p class="muted">Separate from the Givelify verified total. Records are append-only; contact a super administrator to correct a mistake.</p>
+<div class="tablewrap"><table><thead><tr><th>Date</th><th>Contributor</th><th>Amount</th><th>Collected by</th><th>Pledge ref.</th><th>Receipt</th><th>Logged</th></tr></thead><tbody id="rows"></tbody></table></div></section></div>
+<p id="message" class="status" role="status"></p>
+</main><footer>Private fundraiser financial records • Bright Light Church © 2026</footer>
+</body></html>

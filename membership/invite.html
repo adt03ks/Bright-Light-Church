@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Invite Staff | Bright Light Church</title><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="staff-upgrade.css"></head>
+<body><header><strong>BRIGHT LIGHT CHURCH</strong><div>Administrator Invitations</div></header><main>
+<div class="row"><h1>Invite an Administrator</h1><a href="staff.html">Back to Staff Portal</a></div>
+<p id="message" class="notice" role="status" aria-live="polite">Checking your authorization…</p>
+<section class="panel" id="locked"><p>Sign in to the staff portal with your authorized administrator account before inviting staff.</p><a href="staff.html">Go to Sign In</a></section>
+<section class="panel" id="invitePanel" hidden>
+<p>Choose the role and permissions <strong>before</strong> sending the invitation. If an existing member is selected, the account will be connected to their verified profile.</p>
+<form id="inviteForm">
+<div class="grid"><label>Invitation email *<input id="inviteEmail" type="email" autocomplete="off" required maxlength="254" placeholder="staff@example.com"></label>
+<label>Church staff role *<select id="inviteRole" required><option value="secretary">Membership Secretary</option><option value="admin">Administrator</option><option value="treasurer">Treasurer</option><option value="media">Media Administrator</option><option value="events">Events Administrator</option><option value="super_admin">Super Administrator</option></select></label></div>
+<h2>Assigned Permissions</h2><p>Financial access should be granted only to approved finance staff. The system enforces permissions in the database, not just through menu visibility.</p>
+<div id="permissionChoices" class="permission-grid"></div>
+<h2>Link Existing Member (optional)</h2><label>Search existing member name or email<input id="memberSearch" type="search" placeholder="Search existing member records"></label>
+<label>Verified member profile<select id="memberSelect"><option value="">No existing profile — create later</option></select></label>
+<p id="memberNote" class="subtle">Select only a member you have verified belongs to the invitation recipient. If an email is recorded, it must match the invite address.</p>
+<label class="confirm"><input id="confirmLink" type="checkbox" required> I confirm this invitation and its permissions were approved by Bright Light Church leadership, and any selected member profile belongs to this recipient.</label>
+<button id="sendInvite" type="submit">Send Invitation and Assign Access</button>
+</form></section>
+<section id="success" class="panel" hidden><h2>Invitation Sent</h2><p id="successText"></p><p>The recipient should receive the branded invitation through Supabase and Resend. Their role and permitted modules were saved before first login.</p><a href="staff.html">Return to Staff Portal</a></section>
+</main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="config.js"></script><script src="blc-common.js"></script><script src="invite.js"></script></body></html>

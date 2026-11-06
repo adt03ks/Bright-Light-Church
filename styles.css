@@ -56,3 +56,47 @@
   }
 }
 
+/* Bright Light Church - Image Alignment */
+
+/* Standard website images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Church banners and collages */
+.church-banner img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Pastor portraits */
+.pastor-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* Square church graphics */
+.church-square img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Photo galleries */
+.photo-gallery img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center top;
+}
+

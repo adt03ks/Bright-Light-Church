@@ -51,17 +51,36 @@
 
     // Supports conventional <img> tags (older content slots) AND this site's
     // data-image <div> placeholders, including the optional homepage hero video.
-    if (container.tagName === 'IMG') {
-      container.src = publicUrl;
-      container.alt = alt || container.alt || '';
-      return;
-    }
-    const nestedImage = container.querySelector('img[data-blc-image]');
-    if (nestedImage) {
-      nestedImage.src = publicUrl;
-      nestedImage.alt = alt || nestedImage.alt || '';
-      return;
-    }
+ 
+if (container.tagName === 'IMG') {
+  container.src = publicUrl;
+  container.alt = alt || container.alt || '';
+
+  // Apply saved image display settings
+  container.style.width = '100%';
+  container.style.height = '100%';
+  container.style.objectFit = fit;
+  container.style.objectPosition = position;
+
+  return;
+}
+
+   
+const nestedImage = container.querySelector('img[data-blc-image]');
+
+if (nestedImage) {
+  nestedImage.src = publicUrl;
+  nestedImage.alt = alt || nestedImage.alt || '';
+
+  // Apply saved image display settings
+  nestedImage.style.width = '100%';
+  nestedImage.style.height = '100%';
+  nestedImage.style.objectFit = fit;
+  nestedImage.style.objectPosition = position;
+
+  return;
+}
+
 
     // Reuse the background-image system already present in the church design.
     container.dataset.image = publicUrl;

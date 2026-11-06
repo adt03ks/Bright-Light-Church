@@ -141,15 +141,62 @@ function formatHeadline(el,raw){
     if(!part)continue;if(part.startsWith('*')&&part.endsWith('*')&&part.length>2){const em=doc.createElement('em');em.textContent=part.slice(1,-1);output.push(em);}else output.push(doc.createTextNode(part));
   }});el.replaceChildren(...output);
 }
-function replaceImage(node,url,alt){
-  if(!node||!url)return;
-  if(node.tagName==='IMG'){node.src=url;if(alt)node.alt=alt;return;}
-  node.dataset.image=url;node.style.backgroundImage=`url(${JSON.stringify(url)})`;
-  node.style.backgroundSize='cover';node.style.backgroundPosition='center';node.style.backgroundRepeat='no-repeat';
-  node.querySelectorAll('video,img,source').forEach(el=>{el.hidden=true;el.style.display='none';if(el.tagName==='VIDEO')el.pause();});
-  node.querySelectorAll('.placeholder-label,.hero-placeholder').forEach(el=>{el.hidden=true;el.style.display='none';});
-  if(alt?.trim()){node.setAttribute('role','img');node.setAttribute('aria-label',alt.trim());}
+
+function replaceImage(node, url, alt, fit = 'contain', position = 'center') {
+  if (!node || !url) return;
+
+  const allowedFits = ['contain', 'cover'];
+  const allowedPositions = [
+    'center',
+    'center top',
+    'center bottom',
+    'left center',
+    'right center'
+  ];
+
+  fit = allowedFits.includes(fit) ? fit : 'contain';
+  position = allowedPositions.includes(position)
+    ? position
+    : 'center';
+
+  if (node.tagName === 'IMG') {
+    node.src = url;
+    node.style.width = '100%';
+    node.style.height = '100%';
+    node.style.objectFit = fit;
+    node.style.objectPosition = position;
+    node.style.display = 'block';
+
+    if (alt) node.alt = alt;
+    return;
+  }
+
+  node.dataset.image = url;
+  node.style.backgroundImage = `url(${JSON.stringify(url)})`;
+  node.style.backgroundSize = fit;
+  node.style.backgroundPosition = position;
+  node.style.backgroundRepeat = 'no-repeat';
+
+  node.querySelectorAll('video,img,source').forEach(el => {
+    el.hidden = true;
+    el.style.display = 'none';
+
+    if (el.tagName === 'VIDEO') el.pause();
+  });
+
+  node.querySelectorAll(
+    '.placeholder-label,.hero-placeholder'
+  ).forEach(el => {
+    el.hidden = true;
+    el.style.display = 'none';
+  });
+
+  if (alt?.trim()) {
+    node.setAttribute('role', 'img');
+    node.setAttribute('aria-label', alt.trim());
+  }
 }
+
 function previewChanges(){
   const node=selectedNode();if(!frameReady||!node){notice('Select a section in a connected page first.');return;}
   const title=scoped(node,'[data-blc-title]');if(title)formatHeadline(title,$('title').value);

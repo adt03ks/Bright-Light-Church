@@ -43,7 +43,7 @@
       .find(node => node.closest('[data-blc-slot]') === container) || null;
   }
 
-  function updateImage(container, path, alt) {
+  function updateImage(container, path, alt, fit = 'cover', position = 'center') {
     if (!path) return;
     const result = db.storage.from('blc-site-images').getPublicUrl(path);
     const publicUrl = result?.data?.publicUrl;
@@ -66,8 +66,8 @@
     // Reuse the background-image system already present in the church design.
     container.dataset.image = publicUrl;
     container.style.backgroundImage = `url(${JSON.stringify(publicUrl)})`;
-    container.style.backgroundSize = 'cover';
-    container.style.backgroundPosition = 'center';
+   container.style.backgroundSize = fit;
+container.style.backgroundPosition = position;
     container.style.backgroundRepeat = 'no-repeat';
     // Existing script.js may have injected a video or img into the placeholder.
     // Hide these only when the content editor has published a replacement photo.
@@ -91,7 +91,7 @@
     for (const page of pages) {
       const { data: records, error } = await db
         .from('blc_page_content')
-        .select('slot_key,title,caption,image_path,image_alt')
+       .select('slot_key,title,caption,image_path,image_alt,image_fit,image_position')
         .eq('page_key', page)
         .eq('published', true);
       if (error) {
@@ -110,7 +110,17 @@
           if (record.caption.includes('\n')) caption.style.whiteSpace = 'pre-line';
         }
         const image = scoped(element, '[data-blc-image]');
-        if (image && record.image_path) updateImage(image, record.image_path, record.image_alt);
+       
+if (image && record.image_path) {
+  updateImage(
+    image,
+    record.image_path,
+    record.image_alt,
+    record.image_fit || 'cover',
+    record.image_position || 'center'
+  );
+}
+
       }
     }
   } catch (error) {

@@ -47,6 +47,42 @@
           <p class="hint formatting-hint" id="title-hint">Use <code>|</code> for a line break and <code>*words*</code> for italic emphasis.</p>
           <label id="caption-field">Caption <span class="field-detail">teal outline in preview</span><textarea name="caption" id="caption" maxlength="2500" rows="4" placeholder="Leave blank to use original wording"></textarea></label>
           <label id="image-field">Replace photo <span class="field-detail">blue outline in preview</span><input id="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><small>JPEG, PNG, WebP, or GIF, up to 5 MB.</small></label>
+         
+<div id="image-display-settings">
+
+  <label for="image-fit">
+    Image Display
+  </label>
+
+  <select id="image-fit">
+    <option value="cover">
+      Fill Image Space (Crop)
+    </option>
+    <option value="contain">
+      Fit Entire Image (No Crop)
+    </option>
+  </select>
+
+  <label for="image-position">
+    Image Position
+  </label>
+
+  <select id="image-position">
+    <option value="center">Center</option>
+    <option value="center top">Top</option>
+    <option value="center bottom">Bottom</option>
+    <option value="left center">Left</option>
+    <option value="right center">Right</option>
+  </select>
+
+  <p class="hint">
+    Fit Entire Image is recommended for church
+    graphics and collages. Fill Image Space
+    is recommended for photographic banners.
+  </p>
+
+</div>
+
           <label id="alt-field">Image description for accessibility <input name="image_alt" id="alt" maxlength="250" placeholder="Describe what is in the photo"></label>
           <label class="existing-image-field" id="image-path-field">Uploaded image path <input id="image-path" readonly placeholder="No uploaded image"></label>
           <img id="preview" alt="Uploaded image preview" hidden>

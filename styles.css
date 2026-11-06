@@ -100,3 +100,36 @@ img {
   object-position: center top;
 }
 
+/* Bright Light Church - Responsive Image Display */
+
+[data-blc-image] {
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Preserve image container proportions */
+.media-placeholder {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Ensure image elements fill their assigned frame */
+[data-blc-image] > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Maintain responsive layouts */
+@media (max-width: 768px) {
+  .media-placeholder {
+    max-width: 100%;
+  }
+
+  .pastor-photo,
+  .leader-photo {
+    width: 100%;
+  }
+}
+

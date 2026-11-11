@@ -230,20 +230,30 @@ footer {
   ✦ BRIGHT LIGHT CHURCH · 89TH ANNIVERSARY FUNDRAISER ✦
 </div>
 
+
 <div class="timerbar">
   <div>
-    <b>Registration interest closes November 14, 2026 at 11:59 PM CT</b>
+    <b style="color:#f3d28f;font-size:19px;letter-spacing:1px;">
+      EXTENDED!
+    </b>
+    <div style="margin:5px 0 12px;">
+      <b>Registration interest closes November 28, 2026 at 11:59 PM CT.</b>
+    </div>
   </div>
+
   <div class="time">
     <span><b id="days">--</b><small>DAYS</small></span>
     <span><b id="hours">--</b><small>HOURS</small></span>
     <span><b id="minutes">--</b><small>MINUTES</small></span>
     <span><b id="seconds">--</b><small>SECONDS</small></span>
   </div>
-  <small id="countdownMessage">
-    Drawing: Sunday, November 15, 2026
+
+  <small id="countdownMessage"
+         style="display:block;margin-top:10px;">
+    Drawing: Sunday November 29, 2026.
   </small>
 </div>
+
 
 <header>
   <div class="wrap nav">
@@ -286,6 +296,7 @@ footer {
   </div>
 </div>
 
+
 <div class="wrap facts">
   <div>
     <small>Suggested giving</small>
@@ -293,13 +304,14 @@ footer {
   </div>
   <div>
     <small>Registration interest closes</small>
-    <b>Sat, Nov. 14 · 11:59 PM CT</b>
+    <b>Sat, Nov. 28 · 11:59 PM CT</b>
   </div>
   <div>
     <small>Prize drawing event</small>
-    <b>Sun, Nov. 15, 2026</b>
+    <b>Sun, Nov. 29, 2026</b>
   </div>
 </div>
+
 
 <section id="prizes" class="wrap">
   <div class="sectionhead">
@@ -566,12 +578,12 @@ footer {
         </p>
         <p>
           Registration closes Saturday,
-          November 14, 2026, at 11:59 PM
+          November 28, 2026, at 11:59 PM
           Central Standard Time.
         </p>
         <p>
           The drawings will take place on
-          Sunday, November 15, 2026.
+          Sunday, November 29, 2026.
         </p>
 
         <h3>4. How to Enter</h3>
@@ -671,7 +683,7 @@ footer {
         <h3>7. Winner Selection</h3>
         <p>
           Winners will be selected by random
-          drawing on November 15, 2026,
+          drawing on November 29, 2026,
           from all eligible registrations.
         </p>
 
@@ -804,7 +816,7 @@ footer {
         <div class="blc-rules-footnote">
           Official rules for the Bright Light
           Church 2026 Prize Drawing.
-          Drawing date: November 15, 2026.
+          Drawing date: November 29, 2026.
         </div>
 
       </div>
@@ -937,7 +949,7 @@ import {createClient} from
   'https://esm.sh/@supabase/supabase-js@2';
 
 const $ = id => document.getElementById(id);
-const end = new Date('2026-11-14T23:59:00-06:00').getTime();
+const end = new Date('2026-11-28T23:59:00-06:00').getTime();
 
 const configured =
   window.BLC_SUPABASE_URL &&
@@ -966,7 +978,7 @@ function tick() {
 
   if(!s) {
     $('countdownMessage').textContent =
-      'Registration deadline has passed · Drawing Nov. 15, 2026';
+      'Registration deadline has passed · Drawing Nov. 29, 2026';
   }
 }
 

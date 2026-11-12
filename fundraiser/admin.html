@@ -133,21 +133,34 @@ footer {
 
 <main class="wrap">
 
+
 <section id="loginCard" class="card" style="max-width:560px">
-  <h2>Administrator Sign In</h2>
+  <h2>Bright Light Church Staff Sign In</h2>
+
   <p class="muted">
-    Only church staff specifically authorized in Supabase
-    can view registration records.
+    Welcome to the Bright Light Church Staff Portal.
+    Authorized church personnel may sign in to
+    access their assigned responsibilities and
+    administrative tools.
   </p>
 
   <form id="loginForm">
-    <label for="adminEmail">Admin email</label>
-    <input id="adminEmail" type="email"
-           required autocomplete="username">
+    <label for="adminEmail">Staff Email Address</label>
+    <input
+      id="adminEmail"
+      type="email"
+      required
+      autocomplete="username"
+    >
 
     <label for="adminPassword">Password</label>
-    <input id="adminPassword" type="password"
-           required autocomplete="current-password">
+    <input
+      id="adminPassword"
+      type="password"
+      required
+      autocomplete="current-password"
+    >
+
 
     <button style="margin-top:16px" type="submit">
       Sign In

@@ -3,3 +3,110 @@
 @media(max-width:760px){.site-header{position:absolute}.nav-wrap{min-height:78px}.main-nav a:not(.nav-cta){display:none}.main-nav .nav-cta{font-size:.75rem;padding:9px 12px}.brand-text strong{font-size:1rem}.wide-container,.container{width:calc(100% - 38px)}.hero-grid{grid-template-columns:1fr;padding-top:128px;padding-bottom:104px;gap:42px}.hero{min-height:0}.hero-copy{text-align:center}.eyebrow{justify-content:center;font-size:.65rem}.hero h1{font-size:clamp(3.25rem,12vw,5.8rem);margin-left:auto;margin-right:auto}.hero-intro{margin-left:auto;margin-right:auto}.hero-actions,.hero-facts{justify-content:center}.hero-art{width:min(100%,360px);transform:rotate(1deg)}.image-corner{right:-12px}.hero-ribbon{justify-content:space-between;padding:0 20px;gap:28px}.hero-ribbon span:nth-of-type(n+4),.hero-ribbon i:nth-of-type(n+4){display:none}.section{padding:80px 0}.welcome-grid,.feature-grid,.invitation-inner,.join-grid{grid-template-columns:1fr;gap:42px}.welcome-aside{max-width:440px}.statement-card{min-height:0}.experience-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.feature-visual{max-width:520px;height:350px}.contact-band-inner{grid-template-columns:1fr;gap:25px}.contact-person{border-left:0;border-top:1px solid rgba(255,248,237,.45);padding:22px 0 0}.join-copy{padding-top:0}.form-card{padding:35px 27px}.footer-inner{align-items:flex-start;flex-direction:column}}
 @media(max-width:480px){.hero h1{font-size:clamp(3rem,12.5vw,4rem)}.hero-kicker{font-size:1rem}.hero-intro{font-size:.99rem}.hero-actions{flex-direction:column;align-items:stretch}.hero-actions .button{width:100%}.hero-facts{justify-content:center}.hero-art{width:min(100% - 22px,340px)}.experience-grid{grid-template-columns:1fr}.experience-card{min-height:unset;padding:29px}.feature-visual{height:300px}.contact-band{padding:45px 0}.form-card{padding:32px 22px}.form-head h3{font-size:2rem}.footer-inner{gap:15px}.join-grid{gap:28px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.button,.experience-card{transition:none}}
+
+
+/* Featured film: full original artwork, no cropping, linked to YouTube */
+.feature-visual {
+  height: auto;
+  aspect-ratio: 605 / 343;
+  background: #30151d;
+}
+.feature-visual-link {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.feature-visual-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+  background: none;
+  filter: none;
+  transition: transform .25s ease;
+}
+.feature-visual-link:hover .feature-visual-image,
+.feature-visual-link:focus-visible .feature-visual-image {
+  transform: scale(1.015);
+}
+.feature-visual-link:focus-visible {
+  outline: 3px solid #f4ce7f;
+  outline-offset: -4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .feature-visual-image { transition: none; }
+}
+
+
+/* ============================================================
+   November 2026 update: Wide, proportionate hero + Watch Now
+   The flyer maintains its native 1122 x 1402 proportions rather
+   than being compressed or stretched by any other image styling.
+   ============================================================ */
+@media (min-width: 761px) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(25px, 4vw, 65px);
+  }
+}
+.hero-art {
+  width: min(100%, 560px);
+  max-width: 560px;
+  min-width: 0;
+  transform: rotate(.6deg);
+}
+.hero-flyer-link {
+  display: block;
+  position: relative;
+  text-decoration: none;
+  line-height: 0;
+}
+.hero-flyer {
+  display: block;
+  width: 100%;
+  height: auto !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+  object-fit: contain !important;
+  object-position: center;
+}
+.hero-flyer-link:focus-visible,
+.hero-watch-link:focus-visible {
+  outline: 3px solid #f4ce7f;
+  outline-offset: 5px;
+}
+.hero-watch-link {
+  z-index: 5;
+  color: #512620;
+  text-decoration: none;
+  font-family: var(--sans);
+  font-size: .9rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: .01em;
+  padding: 13px 21px;
+  border-radius: 3px;
+  transition: background-color .2s ease, transform .2s ease;
+}
+.hero-watch-link:hover {
+  background-color: #ffeac1;
+  transform: rotate(-4deg) translateY(-2px);
+}
+.hero-watch-link span { margin-left: 8px; }
+@media (max-width: 760px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-art { width: min(100%, 500px); max-width: 500px; transform: rotate(.3deg); }
+}
+@media (max-width: 480px) {
+  .hero-art { width: min(100% - 12px, 420px); }
+  .hero-watch-link { right: -6px; bottom: 18px; padding: 10px 15px; font-size: .82rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-watch-link { transition: none; }
+}

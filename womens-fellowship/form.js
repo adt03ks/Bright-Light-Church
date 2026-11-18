@@ -21,7 +21,7 @@
 
   if (!configured) {
     submit.disabled = true;
-    notify('Online registration will open soon. In the meantime, please contact Sis. Leslie Joseph at (832) 784-7432.', 'error');
+    notify('For any additional questions or requests, please contact Sis. Leslie Joseph at Ljoseph7@yahoo.com', 'error');
     return;
   }
 

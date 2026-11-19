@@ -118,12 +118,57 @@ footer {
   .row>* {width:100%;margin-bottom:10px}
 }
 </style>
+  
+<style>
+  .blc-portal-return {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 24px;
+    background: #081b30;
+    border-bottom: 2px solid #c8a46a;
+    position: relative;
+    z-index: 1000;
+  }
+
+  .blc-portal-return a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .blc-portal-return a:hover {
+    color: #e4c58d;
+    text-decoration: underline;
+  }
+
+  .blc-portal-return a:focus-visible {
+    outline: 2px solid #e4c58d;
+    outline-offset: 4px;
+  }
+</style>
+
 </head>
 
 <body>
+  
+<!-- BACK TO MY CHURCH PORTAL -->
+<div class="blc-portal-return">
+  <a href="https://brightlightchurch.org/membership/portal.html">
+    <span aria-hidden="true">←</span>
+    Back to My Church Portal
+  </a>
+</div>
+
 <header>
   <div class="wrap">
-    <h1>Bright Light Church · Donation Ledger</h1>
+    <h1>Bright Light Church · Fundraiser Donation Ledger</h1>
     <p>
       Private administrator view · Reconcile pledges
       against actual Givelify transactions

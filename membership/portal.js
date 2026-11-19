@@ -6,7 +6,7 @@
 
   // Set this to the actual fundraiser admin page URL.
   // Example: '../fundraiser/admin.html'
-  const FUNDRAISER_ADMIN_URL = '';
+  const FUNDRAISER_ADMIN_URL = '../fundraiser/admin.html';
 
   const notice = (text, err = false) => {
     const n = el('message');

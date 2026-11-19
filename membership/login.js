@@ -25,7 +25,7 @@
   el('show-reset').addEventListener('click',()=>{el('reset-email').value=el('email').value;show('reset-panel');el('message').hidden=true;});
   el('cancel-reset').addEventListener('click',()=>{show('login-panel');el('message').hidden=true;});
   el('reset-form').addEventListener('submit',async e=>{
-    e.preventDefault();const {error}=await db.auth.resetPasswordForEmail(el('reset-email').value.trim(),{redirectTo:new URL('login.html',location.href).href});
+    e.preventDefault();
     if(error)return msg(error.message,true);
     msg('If that email belongs to an account, a password reset link has been sent.');
   });

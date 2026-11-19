@@ -3,3 +3,54 @@
 .linkbutton{background:transparent!important;color:#ead39b!important;text-decoration:underline;text-align:left;padding:3px 0!important;margin:0!important;font-weight:600}.family-row{padding:8px 0;border-bottom:1px solid #38475a}#cardLinks{display:flex;gap:15px;flex-wrap:wrap;margin:15px 0}#profileCard{scroll-margin-top:25px}
 
 .minor-badge{display:inline-flex;justify-content:center;align-items:center;min-width:22px;height:22px;padding:2px 6px;margin-left:5px;border-radius:6px;background:#b32631;color:#fff;font-weight:800;font-size:.78rem;vertical-align:middle;text-decoration:none}.minor-checkbox{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.minor-checkbox input{width:auto;margin:0;accent-color:#ba3440}.minor-checkbox small{display:block;flex-basis:100%;font-size:.76rem;margin-left:25px}
+
+/* ======================================
+   BRIGHT LIGHT CHURCH
+   BACK TO PORTAL NAVIGATION
+====================================== */
+
+.portal-back-navigation {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 55px;
+  padding: 12px 24px;
+  box-sizing: border-box;
+  background: #0b1b2b;
+  border-bottom: 2px solid #d4af37;
+  position: relative;
+  z-index: 1000;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.portal-back-link {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff !important;
+  font-family: 'Manrope', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.portal-back-link:hover {
+  color: #d4af37 !important;
+  text-decoration: underline;
+}
+
+.portal-back-link:focus-visible {
+  outline: 2px solid #d4af37;
+  outline-offset: 4px;
+}
+
+@media (max-width: 600px) {
+  .portal-back-navigation {
+    padding: 12px 16px;
+  }
+}

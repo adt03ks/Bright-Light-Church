@@ -1,52 +1,313 @@
+
 'use strict';
+
 (() => {
-  const el=id=>document.getElementById(id);
-  const notice=(text,err=false)=>{const n=el('message');n.textContent=text;n.className='notice'+(err?' error':'');n.hidden=false;};
-  if(!window.supabase?.createClient||!window.BLC_SUPABASE_URL||!window.BLC_SUPABASE_ANON_KEY){el('loading').textContent='The portal needs a valid Supabase config.js connection.';return;}
-  const db=window.supabase.createClient(window.BLC_SUPABASE_URL,window.BLC_SUPABASE_ANON_KEY);
-  const makeCard=(title,summary,url,symbol)=>{
-    const a=document.createElement('a');a.className='portal-card private';a.href=url;
-    const icon=document.createElement('span');icon.className='symbol';icon.textContent=symbol;icon.setAttribute('aria-hidden','true');
-    const h=document.createElement('h3');h.textContent=title;
-    const p=document.createElement('p');p.textContent=summary;
-    const action=document.createElement('span');action.className='launch';action.textContent='Open '+title+' →';
-    a.append(icon,h,p,action);return a;
+  const el = id => document.getElementById(id);
+
+  // Set this to the actual fundraiser admin page URL.
+  // Example: '../fundraiser/admin.html'
+  const FUNDRAISER_ADMIN_URL = '';
+
+  const notice = (text, err = false) => {
+    const n = el('message');
+    n.textContent = text;
+    n.className = 'notice' + (err ? ' error' : '');
+    n.hidden = false;
   };
-  async function getOwnRecord(table,userId,columns){
-    try{const {data,error}=await db.from(table).select(columns).eq('auth_user_id',userId).maybeSingle();if(error){console.warn('Permission lookup unavailable:',table,error.code);return null;}return data;}
-    catch{return null;}
+
+  if (
+    !window.supabase?.createClient ||
+    !window.BLC_SUPABASE_URL ||
+    !window.BLC_SUPABASE_ANON_KEY
+  ) {
+    el('loading').textContent =
+      'The portal needs a valid Supabase config.js connection.';
+    return;
   }
-  async function load(){
-    const {data,error}=await db.auth.getUser();
-    if(error||!data?.user){location.replace('login.html');return;}
-    const user=data.user;el('account-email').textContent=user.email||'';
-    const [memberResult,claimResult,staff,finance,content,fundraiser]=await Promise.all([
-      db.from('blc_members').select('first_name,last_name,membership_status,member_number').eq('auth_user_id',user.id).maybeSingle(),
-      db.from('blc_profile_claims').select('status').eq('requester_auth_user_id',user.id).maybeSingle(),
-      getOwnRecord('blc_staff_roles',user.id,'role'),
-      getOwnRecord('blc_finance_roles',user.id,'role'),
-      getOwnRecord('blc_content_roles',user.id,'role'),
-      getOwnRecord('blc_fundraiser_roles',user.id,'role')
-    ]);
-    const member=memberResult.error?null:memberResult.data;
-    el('display-name').textContent=member?('Welcome, '+[member.first_name,member.last_name].filter(Boolean).join(' ')+'!'):'Welcome, church member!';
-    el('member-status').textContent=member?('Membership: '+member.membership_status):(claimResult.data?.status==='pending'?'Profile linking: Awaiting review':claimResult.data?.status==='rejected'?'Profile linking: Needs review':'Profile not linked');
-    el('profile-hint').textContent=member?('Member ID: BLC-'+String(member.member_number).padStart(6,'0')):(claimResult.data?.status==='pending'?'Your profile connection request is under church administrator review.':'Open My Member Profile to request secure linking to an existing church record.');
-    const links=el('staff-links');links.replaceChildren();
-    if(staff && ['super_admin','admin','secretary'].includes(staff.role)){
-      links.append(makeCard('Membership Admin','Manage member records, family connections, and review pending profiles.','admin.html','♧'));
-      links.append(makeCard('Account Linking Requests','Review existing member matches and connect registered logins.','claims-admin.html','♙'));
-      links.append(makeCard('Missing Information Report','Identify profiles missing birthdates, contact information, or addresses.','missing-info-report.html','▤'));
-      links.append(makeCard('Events & Birthdays Admin','Manage church events and approved public birthday announcements.','calendar-admin.html','▦'));
+
+  const db = window.supabase.createClient(
+    window.BLC_SUPABASE_URL,
+    window.BLC_SUPABASE_ANON_KEY
+  );
+
+  const makeCard = (title, summary, url, symbol) => {
+    const a = document.createElement('a');
+    a.className = 'portal-card private';
+    a.href = url;
+
+    const icon = document.createElement('span');
+    icon.className = 'symbol';
+    icon.textContent = symbol;
+    icon.setAttribute('aria-hidden', 'true');
+
+    const h = document.createElement('h3');
+    h.textContent = title;
+
+    const p = document.createElement('p');
+    p.textContent = summary;
+
+    const action = document.createElement('span');
+    action.className = 'launch';
+    action.textContent = 'Open ' + title + ' →';
+
+    a.append(icon, h, p, action);
+    return a;
+  };
+
+  async function getOwnRecord(table, userId, columns) {
+    try {
+      const { data, error } = await db
+        .from(table)
+        .select(columns)
+        .eq('auth_user_id', userId)
+        .maybeSingle();
+
+      if (error) {
+        console.warn(
+          'Permission lookup unavailable:',
+          table,
+          error.message
+        );
+        return null;
+      }
+
+      return data;
+    } catch (err) {
+      console.warn('Permission lookup failed:', table, err);
+      return null;
     }
-    if(content && ['content_admin','content_editor'].includes(content.role))links.append(makeCard('Content Admin','Update website photographs, headlines, announcements, and captions.','content-admin.html','✦'));
-    if(finance && ['finance_admin','treasurer','finance_entry','hr_admin'].includes(finance.role))links.append(makeCard('Finance Center','View the finance workspace allowed by your assigned finance role.','finance.html','＄'));
-    if(fundraiser && ['fundraiser_admin','fundraiser_entry'].includes(fundraiser.role))links.append(makeCard('Fundraiser Log','Private in-person collection records and fundraiser activity.','fundraiser-log.html','▣'));
-    el('staff-section').hidden=links.children.length===0;
-    el('member-only').hidden=links.children.length>0;
-    el('loading').hidden=true;el('app').hidden=false;
-    if(memberResult.error)notice('We could not load your member profile. Your sign-in is still active; please try the Member Profile page.',true);
   }
-  el('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('login.html');});
-  load().catch(err=>{el('loading').textContent='Unable to load the portal. '+(err.message||'Please try again.');});
+
+  // Load individual staff permissions.
+  async function getOwnPermissions(userId) {
+    try {
+      const { data, error } = await db
+        .from('blc_staff_permissions')
+        .select('permission')
+        .eq('auth_user_id', userId);
+
+      if (error) {
+        console.warn(
+          'Staff permission lookup failed:',
+          error.message
+        );
+        return [];
+      }
+
+      return (data || []).map(row => row.permission);
+    } catch (err) {
+      console.warn('Could not load staff permissions:', err);
+      return [];
+    }
+  }
+
+  async function load() {
+    const { data, error } = await db.auth.getUser();
+
+    if (error || !data?.user) {
+      location.replace('login.html');
+      return;
+    }
+
+    const user = data.user;
+
+    el('account-email').textContent = user.email || '';
+
+    const [
+      memberResult,
+      claimResult,
+      staff,
+      finance,
+      content,
+      fundraiser,
+      permissions
+    ] = await Promise.all([
+      db.from('blc_members')
+        .select(
+          'first_name,last_name,membership_status,member_number'
+        )
+        .eq('auth_user_id', user.id)
+        .maybeSingle(),
+
+      db.from('blc_profile_claims')
+        .select('status')
+        .eq('requester_auth_user_id', user.id)
+        .maybeSingle(),
+
+      getOwnRecord('blc_staff_roles', user.id, 'role'),
+
+      getOwnRecord('blc_finance_roles', user.id, 'role'),
+
+      getOwnRecord('blc_content_roles', user.id, 'role'),
+
+      getOwnRecord('blc_fundraiser_roles', user.id, 'role'),
+
+      getOwnPermissions(user.id)
+    ]);
+
+    const member = memberResult.error
+      ? null
+      : memberResult.data;
+
+    el('display-name').textContent = member
+      ? 'Welcome, ' +
+        [member.first_name, member.last_name]
+          .filter(Boolean)
+          .join(' ') + '!'
+      : 'Welcome, church member!';
+
+    el('member-status').textContent = member
+      ? 'Membership: ' + member.membership_status
+      : claimResult.data?.status === 'pending'
+        ? 'Profile linking: Awaiting review'
+        : claimResult.data?.status === 'rejected'
+          ? 'Profile linking: Needs review'
+          : 'Profile not linked';
+
+    el('profile-hint').textContent = member
+      ? 'Member ID: BLC-' +
+        String(member.member_number).padStart(6, '0')
+      : claimResult.data?.status === 'pending'
+        ? 'Your profile connection request is under church administrator review.'
+        : 'Open My Member Profile to request secure linking to an existing church record.';
+
+    const links = el('staff-links');
+    links.replaceChildren();
+
+    // Membership administration
+    if (
+      staff &&
+      ['super_admin', 'admin', 'secretary'].includes(staff.role)
+    ) {
+      links.append(
+        makeCard(
+          'Membership Admin',
+          'Manage member records, family connections, and review pending profiles.',
+          'admin.html',
+          '♧'
+        )
+      );
+
+      links.append(
+        makeCard(
+          'Account Linking Requests',
+          'Review existing member matches and connect registered logins.',
+          'claims-admin.html',
+          '♙'
+        )
+      );
+
+      links.append(
+        makeCard(
+          'Missing Information Report',
+          'Identify profiles missing birthdates, contact information, or addresses.',
+          'missing-info-report.html',
+          '▤'
+        )
+      );
+
+      links.append(
+        makeCard(
+          'Events & Birthdays Admin',
+          'Manage church events and approved public birthday announcements.',
+          'calendar-admin.html',
+          '▦'
+        )
+      );
+    }
+
+    // Content administration
+    if (
+      content &&
+      ['content_admin', 'content_editor'].includes(content.role)
+    ) {
+      links.append(
+        makeCard(
+          'Content Admin',
+          'Update website photographs, headlines, announcements, and captions.',
+          'content-admin.html',
+          '✦'
+        )
+      );
+    }
+
+    // Finance administration
+    if (
+      finance &&
+      [
+        'finance_admin',
+        'treasurer',
+        'finance_entry',
+        'hr_admin'
+      ].includes(finance.role)
+    ) {
+      links.append(
+        makeCard(
+          'Finance Center',
+          'View the finance workspace allowed by your assigned finance role.',
+          'finance.html',
+          '＄'
+        )
+      );
+    }
+
+    // Fundraiser administration
+    // Recognize individually assigned staff permissions.
+    const canManageFundraiser =
+      permissions.includes('fundraiser_manage');
+
+    if (canManageFundraiser && FUNDRAISER_ADMIN_URL) {
+      links.append(
+        makeCard(
+          'Fundraiser Administration',
+          'Manage the active church fundraiser, review registrations, contributions, and entries.',
+          FUNDRAISER_ADMIN_URL,
+          '🎟'
+        )
+      );
+    }
+
+    // Existing fundraiser log access
+    if (
+      fundraiser &&
+      ['fundraiser_admin', 'fundraiser_entry']
+        .includes(fundraiser.role)
+    ) {
+      links.append(
+        makeCard(
+          'Fundraiser Log',
+          'Private in-person collection records and fundraiser activity.',
+          'fundraiser-log.html',
+          '▣'
+        )
+      );
+    }
+
+    el('staff-section').hidden =
+      links.children.length === 0;
+
+    el('member-only').hidden =
+      links.children.length > 0;
+
+    el('loading').hidden = true;
+    el('app').hidden = false;
+
+    if (memberResult.error) {
+      notice(
+        'We could not load your member profile. Your sign-in is still active; please try the Member Profile page.',
+        true
+      );
+    }
+  }
+
+  el('sign-out').addEventListener('click', async () => {
+    await db.auth.signOut();
+    location.replace('login.html');
+  });
+
+  load().catch(err => {
+    el('loading').textContent =
+      'Unable to load the portal. ' +
+      (err.message || 'Please try again.');
+  });
 })();

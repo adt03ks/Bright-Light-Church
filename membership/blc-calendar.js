@@ -15,6 +15,49 @@
     const get = key => Number(parts.find(part=>part.type===key)?.value || 1);
     return formatYMD(get('year'),get('month'),get('day'));
   }
+  
+  // Hide expired church events from the public calendar.
+
+  function isUpcomingChurchEvent(event) {
+    const today = churchToday();
+
+    if (!event.event_date) return false;
+
+    const endDate =
+      event.end_date || event.event_date;
+
+    if (endDate < today) return false;
+    if (endDate > today) return true;
+
+    if (event.end_time) {
+      const nowTime = new Intl.DateTimeFormat('en-GB', {
+        timeZone: CHURCH_TIMEZONE,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hourCycle: 'h23'
+      }).format(new Date());
+
+      const match = String(event.end_time).match(
+        /^(\d{1,2}):(\d{2})(?::(\d{2}))?/
+      );
+
+      if (match) {
+        const endTime = [
+          match[1].padStart(2, '0'),
+          match[2],
+          match[3] || '00'
+        ].join(':');
+
+        if (endTime <= nowTime) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
   function formatYMD(year,month,day){return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;}
   function parseYMD(iso){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso||''));return m?new Date(Date.UTC(+m[1],+m[2]-1,+m[3])):null;}
   function isoDay(date){return formatYMD(date.getUTCFullYear(),date.getUTCMonth()+1,date.getUTCDate());}
@@ -46,10 +89,30 @@
     const status=el('p','blc-events-status');status.id='blc-calendar-status';status.setAttribute('aria-live','polite');
     grid.append(calendar,sidebar);mount.append(heading,grid,status);
   }
-  function itemsOn(day){return [
-    ...events.filter(e=>e.event_date===day).map(e=>({kind:'event',data:e})),
-    ...birthdays.filter(b=>b.birthday_on===day).map(b=>({kind:'birthday',data:b}))
-  ];}
+
+  function itemsOn(day) {
+    return [
+      ...events
+        .filter(event =>
+          event.event_date === day &&
+          isUpcomingChurchEvent(event)
+        )
+        .map(event => ({
+          kind: 'event',
+          data: event
+        })),
+
+      ...birthdays
+        .filter(birthday =>
+          birthday.birthday_on === day
+        )
+        .map(birthday => ({
+          kind: 'birthday',
+          data: birthday
+        }))
+    ];
+  }
+
   function renderDays(){
     const days=document.getElementById('blc-calendar-days');days.replaceChildren();
     const today=churchToday(),first=new Date(Date.UTC(currentMonth.year,currentMonth.month,1));
@@ -95,11 +158,38 @@
       ]);
       if(token!==requestToken)return;
       if(e.error)throw e.error;if(b.error)throw b.error;
-      events=Array.isArray(e.data)?e.data:[];birthdays=Array.isArray(b.data)?b.data:[];
+      events = (Array.isArray(e.data) ? e.data : [])
+  .filter(isUpcomingChurchEvent);
+
+birthdays = Array.isArray(b.data) ? b.data : [];
       renderDays();renderDetails();renderBirthdays();status.textContent=`Updated for Bright Light Church · ${monthNames[currentMonth.month]} ${currentMonth.year}`;
     }catch(error){if(token!==requestToken)return;events=[];birthdays=[];renderDays();renderDetails();renderBirthdays();status.textContent='Unable to load events or birthdays. Check that the database upgrade has been installed.';console.warn('[BLC Calendar]',error);}
   }
   const today=churchToday(),initial=parseYMD(today);currentMonth={year:initial.getUTCFullYear(),month:initial.getUTCMonth()};selected=today;
-  shell();void load();
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)void load();});
+  
+  shell();
+  void load();
+
+  document.addEventListener(
+    'visibilitychange',
+    () => {
+      if (!document.hidden) {
+        void load();
+      }
+    }
+  );
+
+  // Refresh public events every 60 seconds.
+
+  setInterval(() => {
+    if (!document.hidden) {
+      events = events.filter(isUpcomingChurchEvent);
+
+      renderDays();
+      renderDetails();
+
+      void load();
+    }
+  }, 60000);
+
 })();

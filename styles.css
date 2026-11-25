@@ -133,3 +133,311 @@ img {
   }
 }
 
+/* =========================================
+   BRIGHT LIGHT CHURCH - UPCOMING EVENTS
+   ========================================= */
+
+.blc-event-carousel {
+  position: relative;
+  border: 1px solid #e4e5e3;
+  background: #ffffff;
+  overflow: hidden;
+  padding: 28px;
+}
+
+.blc-carousel-track {
+  position: relative;
+  min-height: 170px;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.blc-event-slide {
+  display: grid;
+  grid-template-columns: 135px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 26px;
+  min-height: 170px;
+  animation: blcEventSlideIn 0.45s ease;
+}
+
+@keyframes blcEventSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.blc-carousel-date {
+  background: var(--navy, #0c1b2a);
+  color: #ffffff;
+  min-height: 135px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  text-align: center;
+}
+
+.blc-carousel-month {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--gold, #d7b47b);
+  text-transform: uppercase;
+}
+
+.blc-carousel-day {
+  font-family: var(--serif, Georgia);
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.blc-carousel-year {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--gold, #d7b47b);
+}
+
+.blc-carousel-copy {
+  min-width: 0;
+}
+
+.blc-carousel-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  color: #94713b;
+  text-transform: uppercase;
+}
+
+.blc-carousel-copy h3 {
+  font-family: var(--serif, Georgia);
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--navy, #0c1b2a);
+  margin: 8px 0;
+}
+
+.blc-carousel-meta {
+  font-size: 13px;
+  font-weight: 700;
+  color: #94713b;
+  margin: 6px 0;
+}
+
+.blc-carousel-description {
+  font-size: 14px;
+  color: var(--muted, #60707e);
+  line-height: 1.7;
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+
+.blc-carousel-flyer {
+  display: block;
+  width: 210px;
+  max-width: 100%;
+  max-height: 155px;
+  object-fit: contain;
+  background: #f7f4ee;
+}
+
+.blc-carousel-event-link {
+  display: inline-block;
+  color: #826332;
+  font-size: 13px;
+  font-weight: 800;
+  margin-top: 10px;
+}
+
+.blc-carousel-event-link:hover {
+  text-decoration: underline;
+}
+
+.blc-carousel-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid #eeeeee;
+}
+
+.blc-carousel-controls[hidden] {
+  display: none;
+}
+
+.blc-carousel-arrow,
+.blc-carousel-pause {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #d7b47b;
+  background: #ffffff;
+  color: #0c1b2a;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.blc-carousel-arrow:hover,
+.blc-carousel-pause:hover {
+  background: #0c1b2a;
+  color: #ffffff;
+}
+
+.blc-carousel-arrow:focus-visible,
+.blc-carousel-pause:focus-visible,
+.blc-carousel-dot:focus-visible {
+  outline: 3px solid #ad8951;
+  outline-offset: 3px;
+}
+
+.blc-carousel-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.blc-carousel-dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: none;
+  border-radius: 20px;
+  background: #d6dce0;
+  cursor: pointer;
+  transition: width 0.25s, background 0.25s;
+}
+
+.blc-carousel-dot.is-active {
+  width: 24px;
+  background: #ad8951;
+}
+
+.blc-carousel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding-top: 18px;
+  font-size: 12px;
+  color: var(--muted, #60707e);
+}
+
+.blc-carousel-footer a {
+  color: #826332;
+  font-weight: 800;
+}
+
+.blc-carousel-message {
+  text-align: center;
+  padding: 24px;
+}
+
+.blc-carousel-message span {
+  display: block;
+  font-size: 34px;
+  color: #ad8951;
+}
+
+.blc-carousel-message h3 {
+  font-family: var(--serif, Georgia);
+  color: #0c1b2a;
+  margin: 8px 0;
+  font-size: 25px;
+}
+
+.blc-carousel-message p {
+  color: var(--muted, #60707e);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Tablet */
+
+@media (max-width: 850px) {
+  .blc-event-slide {
+    grid-template-columns: 105px minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .blc-carousel-flyer {
+    grid-column: 1 / -1;
+    width: 100%;
+    max-height: 240px;
+  }
+
+  .blc-carousel-date {
+    min-height: 115px;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 590px) {
+  .blc-event-carousel {
+    padding: 18px;
+  }
+
+  .blc-event-slide {
+    grid-template-columns: 78px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+  }
+
+  .blc-carousel-date {
+    min-height: 100px;
+    padding: 12px 6px;
+  }
+
+  .blc-carousel-day {
+    font-size: 34px;
+  }
+
+  .blc-carousel-month {
+    font-size: 10px;
+  }
+
+  .blc-carousel-copy h3 {
+    font-size: 21px;
+  }
+
+  .blc-carousel-description {
+    font-size: 13px;
+  }
+
+  .blc-carousel-controls {
+    gap: 10px;
+  }
+
+  .blc-carousel-footer {
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blc-event-slide {
+    animation: none;
+  }
+
+  .blc-carousel-dot {
+    transition: none;
+  }
+}
+

@@ -131,16 +131,434 @@
       b.addEventListener('click',()=>{selected=day;if(date.getUTCMonth()!==currentMonth.month){currentMonth={year:date.getUTCFullYear(),month:date.getUTCMonth()};void load();}else{renderDays();renderDetails();}});days.append(b);
     }
   }
-  function renderDetails(){
-    const holder=document.getElementById('blc-calendar-detail');holder.replaceChildren();const on=selected||churchToday();holder.append(el('h4','',dateLabel(on)));
-    const found=itemsOn(on);if(!found.length){holder.append(el('p','blc-calendar-empty','Nothing listed for this date.'));return;}
-    for(const item of found){const entry=el('div','blc-event-detail');
-      entry.append(el('div','blc-event-type'+(item.kind==='birthday'?' birthday':''),item.kind==='birthday'?'Member Birthday':'Church Event'));
-      if(item.kind==='birthday'){entry.append(el('strong','',`🎂 ${item.data.display_name}`));}
-      else{const e=item.data;entry.append(el('strong','',e.event_title));if(e.start_time)entry.append(el('p','',niceTime(e.start_time)+' · America/Chicago'));if(e.event_location)entry.append(el('p','',e.event_location));if(e.event_description)entry.append(el('p','',e.event_description));if(e.details_url){const a=link(e.details_url,'Event details');if(a)entry.append(a);}}
-      holder.append(entry);
+  
+function openEventDetails(event) {
+
+  if (!isUpcomingChurchEvent(event)) {
+    return;
+  }
+
+  document.getElementById(
+    'blc-event-dialog'
+  )?.remove();
+
+  const dialog = el(
+    'dialog',
+    'blc-event-dialog'
+  );
+
+  dialog.id = 'blc-event-dialog';
+
+  const panel = el(
+    'div',
+    'blc-event-modal-panel'
+  );
+
+  const closeButton = el(
+    'button',
+    'blc-event-modal-close',
+    '×'
+  );
+
+  closeButton.type = 'button';
+
+  closeButton.setAttribute(
+    'aria-label',
+    'Close event details'
+  );
+
+  closeButton.addEventListener(
+    'click',
+    () => dialog.close()
+  );
+
+  panel.append(closeButton);
+
+  // Display the promotional flyer.
+
+  if (event.flyer_url) {
+
+    const validImageLink = link(
+      event.flyer_url,
+      ''
+    );
+
+    if (validImageLink) {
+
+      const image = el(
+        'img',
+        'blc-event-modal-image'
+      );
+
+      image.src = validImageLink.href;
+
+      image.alt =
+        `${event.event_title} promotional flyer`;
+
+      image.addEventListener(
+        'error',
+        () => image.remove()
+      );
+
+      panel.append(image);
     }
   }
+
+  const content = el(
+    'div',
+    'blc-event-modal-content'
+  );
+
+  content.append(
+    el(
+      'div',
+      'blc-event-modal-label',
+      'BRIGHT LIGHT CHURCH'
+    )
+  );
+
+  const heading = el(
+    'h2',
+    '',
+    event.event_title
+  );
+
+  heading.id = 'blc-event-dialog-title';
+
+  dialog.setAttribute(
+    'aria-labelledby',
+    heading.id
+  );
+
+  content.append(heading);
+
+  content.append(
+    el(
+      'p',
+      'blc-event-modal-meta',
+      '📅 ' + dateLabel(event.event_date)
+    )
+  );
+
+  if (event.start_time) {
+
+    let timeText =
+      niceTime(event.start_time);
+
+    if (event.end_time) {
+      timeText +=
+        ' – ' + niceTime(event.end_time);
+    }
+
+    content.append(
+      el(
+        'p',
+        'blc-event-modal-meta',
+        '🕒 ' + timeText + ' CT'
+      )
+    );
+  }
+
+  if (event.event_location) {
+
+    content.append(
+      el(
+        'p',
+        'blc-event-modal-meta',
+        '📍 ' + event.event_location
+      )
+    );
+  }
+
+  if (event.event_description) {
+
+    content.append(
+      el(
+        'h3',
+        '',
+        'About This Event'
+      )
+    );
+
+    content.append(
+      el(
+        'p',
+        'blc-event-modal-description',
+        event.event_description
+      )
+    );
+  }
+
+  const actions = el(
+    'div',
+    'blc-event-modal-actions'
+  );
+
+  if (event.details_url) {
+
+    const externalLink = link(
+      event.details_url,
+      'More Information / Registration ↗'
+    );
+
+    if (externalLink) {
+
+      externalLink.className =
+        'blc-event-modal-button';
+
+      actions.append(externalLink);
+    }
+  }
+
+  const shareButton = el(
+    'button',
+    'blc-event-modal-button',
+    'Share Event'
+  );
+
+  shareButton.type = 'button';
+
+  shareButton.addEventListener(
+    'click',
+    async () => {
+
+      const shareUrl = new URL(
+        window.location.pathname,
+        window.location.origin
+      );
+
+      shareUrl.searchParams.set(
+        'event',
+        event.event_id
+      );
+
+      shareUrl.searchParams.set(
+        'date',
+        event.event_date
+      );
+
+      try {
+
+        if (navigator.share) {
+
+          await navigator.share({
+            title: event.event_title,
+            text: 'Join us at Bright Light Church!',
+            url: shareUrl.href
+          });
+
+        } else {
+
+          await navigator.clipboard.writeText(
+            shareUrl.href
+          );
+
+          shareButton.textContent =
+            'Link Copied!';
+
+        }
+
+      } catch (error) {
+
+        if (error.name !== 'AbortError') {
+
+          window.prompt(
+            'Copy this event link:',
+            shareUrl.href
+          );
+
+        }
+      }
+
+    }
+  );
+
+  actions.append(shareButton);
+  content.append(actions);
+  panel.append(content);
+  dialog.append(panel);
+
+  document.body.append(dialog);
+
+  dialog.addEventListener(
+    'click',
+    event => {
+      if (event.target === dialog) {
+        dialog.close();
+      }
+    }
+  );
+
+  dialog.addEventListener(
+    'close',
+    () => dialog.remove()
+  );
+
+  dialog.showModal();
+
+}
+
+  
+function renderDetails() {
+
+  const holder = document.getElementById(
+    'blc-calendar-detail'
+  );
+
+  holder.replaceChildren();
+
+  const on = selected || churchToday();
+
+  holder.append(
+    el('h4', '', dateLabel(on))
+  );
+
+  const found = itemsOn(on);
+
+  if (!found.length) {
+
+    holder.append(
+      el(
+        'p',
+        'blc-calendar-empty',
+        'Nothing listed for this date.'
+      )
+    );
+
+    return;
+  }
+
+  for (const item of found) {
+
+    const entry = el(
+      'div',
+      'blc-event-detail'
+    );
+
+    if (item.kind === 'birthday') {
+
+      entry.append(
+        el(
+          'div',
+          'blc-event-type birthday',
+          'Member Birthday'
+        ),
+
+        el(
+          'strong',
+          '',
+          `🎂 ${item.data.display_name}`
+        )
+      );
+
+    } else {
+
+      const event = item.data;
+
+      entry.append(
+        el(
+          'div',
+          'blc-event-type',
+          'Church Event'
+        )
+      );
+
+      const button = el(
+        'button',
+        'blc-calendar-event-card'
+      );
+
+      button.type = 'button';
+
+      button.addEventListener(
+        'click',
+        () => openEventDetails(event)
+      );
+
+      if (event.flyer_url) {
+
+        const validImage = link(
+          event.flyer_url,
+          ''
+        );
+
+        if (validImage) {
+
+          const image = el(
+            'img',
+            'blc-calendar-event-thumbnail'
+          );
+
+          image.src = validImage.href;
+
+          image.alt =
+            `${event.event_title} flyer`;
+
+          image.loading = 'lazy';
+
+          image.addEventListener(
+            'error',
+            () => image.remove()
+          );
+
+          button.append(image);
+        }
+      }
+
+      const copy = el(
+        'div',
+        'blc-calendar-event-copy'
+      );
+
+      copy.append(
+        el(
+          'strong',
+          '',
+          event.event_title
+        )
+      );
+
+      if (event.start_time) {
+
+        copy.append(
+          el(
+            'p',
+            '',
+            niceTime(event.start_time) + ' CT'
+          )
+        );
+      }
+
+      if (event.event_location) {
+
+        copy.append(
+          el(
+            'p',
+            '',
+            event.event_location
+          )
+        );
+      }
+
+      copy.append(
+        el(
+          'span',
+          'blc-calendar-view-details',
+          'View Event Details →'
+        )
+      );
+
+      button.append(copy);
+      entry.append(button);
+
+    }
+
+    holder.append(entry);
+
+  }
+
+}
+
   function renderBirthdays(){
     const target=document.getElementById('blc-birthday-list');target.replaceChildren();
     if(!birthdays.length){target.append(el('p','blc-calendar-empty','No public birthdays are listed for the next 30 days. Members must opt in before their birthdays appear.'));return;}
@@ -153,7 +571,10 @@
     if(!db){status.textContent='Calendar configuration is missing. Contact the website administrator.';renderDays();renderBirthdays();return;}
     try{
       const [e,b]=await Promise.all([
-        db.rpc('blc_public_calendar_events',{p_start_date:start,p_end_date:end}),
+       db.rpc('blc_public_calendar_events_v2', {
+  p_start_date: start,
+  p_end_date: end
+}),
         db.rpc('blc_public_next_30_birthdays')
       ]);
       if(token!==requestToken)return;
@@ -162,10 +583,68 @@
   .filter(isUpcomingChurchEvent);
 
 birthdays = Array.isArray(b.data) ? b.data : [];
-      renderDays();renderDetails();renderBirthdays();status.textContent=`Updated for Bright Light Church · ${monthNames[currentMonth.month]} ${currentMonth.year}`;
+      renderDays();renderDetails();renderBirthdays();
+if (requestedEventId) {
+
+  const requestedEvent = events.find(
+    event =>
+      String(event.event_id) ===
+      String(requestedEventId)
+  );
+
+  if (requestedEvent) {
+
+    selected = requestedEvent.event_date;
+
+    renderDays();
+    renderDetails();
+
+    openEventDetails(requestedEvent);
+
+  } else {
+
+    status.textContent =
+      'This event is no longer available.';
+
+  }
+
+  requestedEventId = null;
+
+}
+status.textContent=`Updated for Bright Light Church · ${monthNames[currentMonth.month]} ${currentMonth.year}`;
     }catch(error){if(token!==requestToken)return;events=[];birthdays=[];renderDays();renderDetails();renderBirthdays();status.textContent='Unable to load events or birthdays. Check that the database upgrade has been installed.';console.warn('[BLC Calendar]',error);}
   }
-  const today=churchToday(),initial=parseYMD(today);currentMonth={year:initial.getUTCFullYear(),month:initial.getUTCMonth()};selected=today;
+  
+const eventParams = new URLSearchParams(
+  window.location.search
+);
+
+let requestedEventId =
+  eventParams.get('event');
+
+const requestedEventDate =
+  eventParams.get('date');
+
+const today = churchToday();
+
+const validRequestedDate =
+  requestedEventDate &&
+  parseYMD(requestedEventDate) &&
+  requestedEventDate >= today
+    ? requestedEventDate
+    : today;
+
+const initial = parseYMD(
+  validRequestedDate
+);
+
+currentMonth = {
+  year: initial.getUTCFullYear(),
+  month: initial.getUTCMonth()
+};
+
+selected = validRequestedDate;
+
   
   shell();
   void load();

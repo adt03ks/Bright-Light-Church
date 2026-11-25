@@ -199,3 +199,27 @@
   }
 
 }
+.pill.expired {
+  background: #edf0f2;
+  border: 1px solid #d4d9dd;
+  color: #60707e;
+}
+
+.event-date-help {
+  margin: 8px 0 20px;
+  padding: 12px 15px;
+  background: #f7f4ee;
+  border-left: 3px solid #d7b47b;
+  color: #60707e;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+#event-date,
+#event-end-date,
+#event-start,
+#event-end {
+  width: 100%;
+  min-width: 0;
+  color-scheme: light;
+}

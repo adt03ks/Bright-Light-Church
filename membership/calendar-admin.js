@@ -8,6 +8,22 @@
   let events = [], members = [], consents = new Map(), publicBirthdays = [];
   let saving = false;
 
+// Event flyer upload configuration.
+
+const EVENT_IMAGE_BUCKET = 'blc-site-images';
+
+const EVENT_IMAGE_MAX_SIZE = 5 * 1024 * 1024;
+
+const EVENT_IMAGE_TYPES = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif'
+};
+
+let pendingEventFlyer = null;
+let flyerPreviewObjectUrl = null;
+
   function notice(text, error = false) {
     const el = $('notice'); el.textContent = text; el.className = 'notice' + (error ? ' error' : ''); el.hidden = false;
   }
@@ -58,30 +74,340 @@
     }
     if (tab === 'birthdays') $('member-search').focus();
   }
-  function resetForm() {
-    $('event-form').reset();
-    $('event-id').value = '';
-    $('event-date').value = chicagoToday();
-    $('event-editor-title').textContent = 'Add Church Event';
-    $('edit-indicator').hidden = true;
-    $('save-event').textContent = 'Save Event';
+  
+// =========================================
+// EVENT FLYER MANAGEMENT
+// =========================================
+
+function releaseFlyerPreview() {
+
+  if (flyerPreviewObjectUrl) {
+
+    URL.revokeObjectURL(flyerPreviewObjectUrl);
+
+    flyerPreviewObjectUrl = null;
+
   }
-  function editEvent(record) {
-    $('event-id').value = record.id;
-    $('event-title').value = record.title;
-    $('event-date').value = record.event_date;
-    $('event-start').value = record.start_time?.slice(0, 5) || '';
-    $('event-end').value = record.end_time?.slice(0, 5) || '';
-    $('event-location').value = record.location || '';
-    $('event-description').value = record.description || '';
-    $('event-url').value = record.details_url || '';
-    $('event-published').checked = record.published;
-    $('event-editor-title').textContent = 'Edit Church Event';
-    $('edit-indicator').hidden = false;
-    $('save-event').textContent = 'Save Changes';
-    $('event-form').scrollIntoView({behavior:'smooth', block:'start'});
-    $('event-title').focus({preventScroll:true});
+
+}
+
+function safeFlyerUrl(value) {
+
+  if (!value) return '';
+
+  try {
+
+    const url = new URL(value);
+
+    return url.protocol === 'https:'
+      ? url.href
+      : '';
+
+  } catch {
+
+    return '';
+
   }
+
+}
+
+function showFlyerPreview(src, message) {
+
+  const image = $('event-flyer-preview');
+
+  const wrapper = $('event-flyer-preview-wrap');
+
+  if (src) {
+
+    image.src = src;
+
+    wrapper.hidden = false;
+
+  } else {
+
+    image.removeAttribute('src');
+
+    wrapper.hidden = true;
+
+  }
+
+  $('event-flyer-status').textContent =
+    message || 'No promotional image selected.';
+
+}
+
+function resetEventFlyer() {
+
+  releaseFlyerPreview();
+
+  pendingEventFlyer = null;
+
+  $('event-flyer').value = '';
+
+  $('event-flyer-url').value = '';
+
+  showFlyerPreview(
+    '',
+    'No promotional image selected.'
+  );
+
+}
+
+function loadExistingFlyer(url) {
+
+  resetEventFlyer();
+
+  const safeUrl = safeFlyerUrl(url);
+
+  $('event-flyer-url').value = safeUrl;
+
+  if (safeUrl) {
+
+    showFlyerPreview(
+      safeUrl,
+      'Current saved event flyer.'
+    );
+
+  }
+
+}
+
+function selectEventFlyer() {
+
+  if (saving) return;
+
+  const input = $('event-flyer');
+
+  const file = input.files?.[0];
+
+  if (!file) return;
+
+  if (!EVENT_IMAGE_TYPES[file.type]) {
+
+    input.value = '';
+
+    notice(
+      'Please select a JPG, PNG, WebP or GIF image.',
+      true
+    );
+
+    return;
+
+  }
+
+  if (file.size > EVENT_IMAGE_MAX_SIZE) {
+
+    input.value = '';
+
+    notice(
+      'The selected image exceeds the 5 MB upload limit.',
+      true
+    );
+
+    return;
+
+  }
+
+  releaseFlyerPreview();
+
+  pendingEventFlyer = file;
+
+  flyerPreviewObjectUrl =
+    URL.createObjectURL(file);
+
+  const sizeMb =
+    (file.size / (1024 * 1024)).toFixed(2);
+
+  showFlyerPreview(
+    flyerPreviewObjectUrl,
+    `${file.name} · ${sizeMb} MB · Ready to upload when the event is saved.`
+  );
+
+}
+
+function removeEventFlyer() {
+
+  if (saving) return;
+
+  if (!window.confirm(
+    'Remove the promotional image from this event? Save the event to apply this change.'
+  )) {
+
+    return;
+
+  }
+
+  resetEventFlyer();
+
+  $('event-flyer-status').textContent =
+    'Image removed. Save the event to apply this change.';
+
+}
+
+async function uploadEventFlyer(file) {
+
+  if (!file) {
+
+    return $('event-flyer-url').value || null;
+
+  }
+
+  const extension =
+    EVENT_IMAGE_TYPES[file.type];
+
+  if (!extension) {
+
+    throw new Error(
+      'Unsupported event image format.'
+    );
+
+  }
+
+  if (file.size > EVENT_IMAGE_MAX_SIZE) {
+
+    throw new Error(
+      'The image exceeds the 5 MB limit.'
+    );
+
+  }
+
+  const fileName =
+    `${crypto.randomUUID()}.${extension}`;
+
+  const path =
+    `events/${fileName}`;
+
+  $('event-flyer-status').textContent =
+    'Uploading promotional image…';
+
+  const uploadResult = await db.storage
+
+    .from(EVENT_IMAGE_BUCKET)
+
+    .upload(path, file, {
+      cacheControl: '3600',
+      contentType: file.type,
+      upsert: false
+    });
+
+  if (uploadResult.error) {
+
+    throw uploadResult.error;
+
+  }
+
+  const publicResult = db.storage
+
+    .from(EVENT_IMAGE_BUCKET)
+
+    .getPublicUrl(path);
+
+  const publicUrl = safeFlyerUrl(
+    publicResult.data?.publicUrl
+  );
+
+  if (!publicUrl) {
+
+    throw new Error(
+      'The image uploaded, but its public URL could not be generated.'
+    );
+
+  }
+
+  $('event-flyer-url').value = publicUrl;
+
+  pendingEventFlyer = null;
+
+  releaseFlyerPreview();
+
+  $('event-flyer').value = '';
+
+  showFlyerPreview(
+    publicUrl,
+    'Image uploaded successfully. Saving event…'
+  );
+
+  return publicUrl;
+
+}
+
+// =========================================
+// END EVENT FLYER MANAGEMENT
+// =========================================
+
+ 
+function resetForm() {
+
+  if (saving) return;
+
+  $('event-form').reset();
+
+  $('event-id').value = '';
+
+  $('event-date').value = chicagoToday();
+
+  $('event-editor-title').textContent =
+    'Add Church Event';
+
+  $('edit-indicator').hidden = true;
+
+  $('save-event').textContent =
+    'Save Event';
+
+  resetEventFlyer();
+
+}
+
+  
+function editEvent(record) {
+
+  if (saving) return;
+
+  $('event-id').value = record.id;
+
+  $('event-title').value = record.title;
+
+  $('event-date').value = record.event_date;
+
+  $('event-start').value =
+    record.start_time?.slice(0, 5) || '';
+
+  $('event-end').value =
+    record.end_time?.slice(0, 5) || '';
+
+  $('event-location').value =
+    record.location || '';
+
+  $('event-description').value =
+    record.description || '';
+
+  $('event-url').value =
+    record.details_url || '';
+
+  $('event-published').checked =
+    record.published;
+
+  loadExistingFlyer(record.flyer_url);
+
+  $('event-editor-title').textContent =
+    'Edit Church Event';
+
+  $('edit-indicator').hidden = false;
+
+  $('save-event').textContent =
+    'Save Changes';
+
+  $('event-form').scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+
+  $('event-title').focus({
+    preventScroll: true
+  });
+
+}
+
   function renderEvents() {
     const list = $('event-list'); list.replaceChildren();
     const needle = $('event-search').value.trim().toLowerCase();
@@ -97,6 +423,35 @@
     if (!filtered.length) { list.append(el('p', 'count', 'No matching events. Create an event or change the filter.')); return; }
     for (const e of filtered.slice(0, 250)) {
       const row = el('div','event-row'), detail = el('div'), actions = el('div','row-actions');
+      
+// Display saved promotional image.
+
+const savedFlyerUrl =
+  safeFlyerUrl(e.flyer_url);
+
+if (savedFlyerUrl) {
+
+  const thumbnail = el(
+    'img',
+    'saved-event-thumbnail'
+  );
+
+  thumbnail.src = savedFlyerUrl;
+
+  thumbnail.alt =
+    `${e.title} promotional flyer`;
+
+  thumbnail.loading = 'lazy';
+
+  thumbnail.addEventListener(
+    'error',
+    () => thumbnail.remove()
+  );
+
+  detail.append(thumbnail);
+
+}
+
       detail.append(el('h3','', e.title));
       detail.append(el('p','', `${dateLabel(e.event_date)}${e.start_time ? ' · ' + e.start_time.slice(0,5) : ''}${e.location ? ' · ' + e.location : ''}`));
       actions.append(el('span', 'pill' + (e.published ? '' : ' draft'), e.published ? 'Published' : 'Draft'));
@@ -107,10 +462,25 @@
     }
     if (filtered.length > 250) list.append(el('p','count','Showing first 250 entries. Use search to narrow results.'));
   }
-  async function loadEvents() {
-    events = await allRows('blc_calendar_events', 'id,title,description,event_date,start_time,end_time,location,details_url,published','event_date');
-    renderEvents(); renderStats();
-  }
+ 
+async function loadEvents() {
+
+  events = await allRows(
+
+    'blc_calendar_events',
+
+    'id,title,description,event_date,start_time,end_time,location,details_url,published,flyer_url',
+
+    'event_date'
+
+  );
+
+  renderEvents();
+
+  renderStats();
+
+}
+
   async function setPublished(record, publish) {
     if (!window.confirm(`${publish ? 'Publish' : 'Remove from the public calendar'}: ${record.title}?`)) return;
     try {
@@ -119,32 +489,250 @@
       await loadEvents(); notice(publish ? 'Event published to the public calendar.' : 'Event saved as a private draft.');
     } catch(e) { notice('Unable to change publication: ' + e.message, true); }
   }
-  async function saveEvent(ev) {
-    ev.preventDefault(); if (saving) return;
-    const payload = {
-      title: $('event-title').value.trim(), event_date: $('event-date').value,
-      start_time: $('event-start').value || null, end_time: $('event-end').value || null,
-      location: $('event-location').value.trim() || null,
-      description: $('event-description').value.trim() || null,
-      details_url: $('event-url').value.trim() || null,
-      published: $('event-published').checked
-    };
-    if (!payload.title || !payload.event_date) { notice('Event name and date are required.', true); return; }
-    if (payload.end_time && !payload.start_time) { notice('Add a start time if you enter an end time.', true); return; }
-    if (payload.start_time && payload.end_time && payload.end_time <= payload.start_time) { notice('End time must be later than start time.', true); return; }
-    if (payload.details_url && !/^https:\/\/\S+$/i.test(payload.details_url)) { notice('Event links must start with https://.', true); return; }
-    saving = true; $('save-event').disabled = true;
-    try {
-      const id = $('event-id').value;
-      let result;
-      if (id) result = unwrap(await db.from('blc_calendar_events').update(payload).eq('id',id).select('id').maybeSingle());
-      else result = unwrap(await db.from('blc_calendar_events').insert(payload).select('id').single());
-      if (!result?.id) throw new Error('No event was saved. Verify calendar permissions.');
-      resetForm(); await loadEvents();
-      notice(payload.published ? 'Saved and published. Visitors can now see this event.' : 'Event saved as a private draft.');
-    } catch(e) { notice('Could not save event: ' + e.message, true); }
-    finally { saving = false; $('save-event').disabled = false; }
+ 
+async function saveEvent(ev) {
+
+  ev.preventDefault();
+
+  if (saving) return;
+
+  const payload = {
+
+    title:
+      $('event-title').value.trim(),
+
+    event_date:
+      $('event-date').value,
+
+    start_time:
+      $('event-start').value || null,
+
+    end_time:
+      $('event-end').value || null,
+
+    location:
+      $('event-location').value.trim() || null,
+
+    description:
+      $('event-description').value.trim() || null,
+
+    details_url:
+      $('event-url').value.trim() || null,
+
+    published:
+      $('event-published').checked,
+
+    flyer_url:
+      $('event-flyer-url').value || null
+
+  };
+
+  // Validate required information.
+
+  if (!payload.title || !payload.event_date) {
+
+    notice(
+      'Event name and date are required.',
+      true
+    );
+
+    return;
+
   }
+
+  if (
+    payload.end_time &&
+    !payload.start_time
+  ) {
+
+    notice(
+      'Add a start time if you enter an end time.',
+      true
+    );
+
+    return;
+
+  }
+
+  if (
+    payload.start_time &&
+    payload.end_time &&
+    payload.end_time <= payload.start_time
+  ) {
+
+    notice(
+      'End time must be later than start time.',
+      true
+    );
+
+    return;
+
+  }
+
+  if (
+    payload.details_url &&
+    !/^https:\/\/\S+$/i.test(payload.details_url)
+  ) {
+
+    notice(
+      'Event links must start with https://.',
+      true
+    );
+
+    return;
+
+  }
+
+  saving = true;
+
+  const formControls = Array.from(
+    $('event-form').querySelectorAll(
+      'input, textarea, select, button'
+    )
+  );
+
+  const previousDisabledStates =
+    formControls.map(control => control.disabled);
+
+  formControls.forEach(control => {
+
+    control.disabled = true;
+
+  });
+
+  $('save-event').textContent =
+    pendingEventFlyer
+      ? 'Uploading Image…'
+      : 'Saving Event…';
+
+  let saved = false;
+
+  try {
+
+    const id = $('event-id').value;
+
+    // Upload newly selected promotional image.
+
+    if (pendingEventFlyer) {
+
+      payload.flyer_url =
+        await uploadEventFlyer(
+          pendingEventFlyer
+        );
+
+    }
+
+    $('save-event').textContent =
+      'Saving Event…';
+
+    let result;
+
+    // Update existing event.
+
+    if (id) {
+
+      result = unwrap(
+
+        await db
+
+          .from('blc_calendar_events')
+
+          .update(payload)
+
+          .eq('id', id)
+
+          .select('id')
+
+          .maybeSingle()
+
+      );
+
+    } else {
+
+      // Create new event.
+
+      result = unwrap(
+
+        await db
+
+          .from('blc_calendar_events')
+
+          .insert(payload)
+
+          .select('id')
+
+          .single()
+
+      );
+
+    }
+
+    if (!result?.id) {
+
+      throw new Error(
+        'No event was saved. Verify calendar permissions.'
+      );
+
+    }
+
+    saved = true;
+
+  } catch (error) {
+
+    notice(
+      'Could not save event: ' +
+      error.message,
+      true
+    );
+
+  } finally {
+
+    saving = false;
+
+    formControls.forEach((control, index) => {
+
+      control.disabled =
+        previousDisabledStates[index];
+
+    });
+
+    $('save-event').textContent =
+      $('event-id').value
+        ? 'Save Changes'
+        : 'Save Event';
+
+  }
+
+  if (!saved) return;
+
+  resetForm();
+
+  try {
+
+    await loadEvents();
+
+    notice(
+
+      payload.published
+
+        ? 'Event saved and published. Upcoming events and their flyers will appear on the church homepage and public calendar.'
+
+        : 'Event saved as a private calendar draft.'
+
+    );
+
+  } catch (error) {
+
+    notice(
+      'Event saved successfully, but the event list could not refresh: ' +
+      error.message,
+      true
+    );
+
+  }
+
+}
+
   function renderMembers() {
     const target = $('member-list'); target.replaceChildren();
     const filter = $('birthday-filter').value, needle = $('member-search').value.trim().toLowerCase(), today = chicagoToday();
@@ -236,6 +824,47 @@
   $('tab-events').addEventListener('click',()=>setTab('events'));
   $('tab-birthdays').addEventListener('click',()=>setTab('birthdays'));
   $('event-form').addEventListener('submit', saveEvent);
+  
+// Event flyer controls.
+
+$('event-flyer').addEventListener(
+  'change',
+  selectEventFlyer
+);
+
+$('replace-event-flyer').addEventListener(
+  'click',
+  () => {
+
+    if (!saving) {
+
+      $('event-flyer').click();
+
+    }
+
+  }
+);
+
+$('remove-event-flyer').addEventListener(
+  'click',
+  removeEventFlyer
+);
+
+$('event-flyer-preview').addEventListener(
+  'error',
+  () => {
+
+    $('event-flyer-status').textContent =
+      'The image preview could not be loaded. Please verify the image or select a replacement.';
+
+  }
+);
+
+window.addEventListener(
+  'pagehide',
+  releaseFlyerPreview
+);
+
   $('clear-event').addEventListener('click', resetForm);
   $('event-search').addEventListener('input', renderEvents);
   $('event-filter').addEventListener('change', renderEvents);

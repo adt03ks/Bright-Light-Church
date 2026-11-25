@@ -59,12 +59,63 @@
             <form id="event-form">
               <input type="hidden" id="event-id">
               <label>Event name <input id="event-title" maxlength="160" placeholder="Annual Church Anniversary" required></label>
-              <div class="field-grid">
-                <label>Event date <input id="event-date" type="date" required></label>
-                <label>Starts at (optional) <input id="event-start" type="time"></label>
-                <label>Ends at (optional) <input id="event-end" type="time"></label>
-                <label>Location (optional) <input id="event-location" maxlength="200" placeholder="Main Sanctuary"></label>
-              </div>
+           
+<div class="field-grid">
+
+  <label>
+    Start Date
+    <input
+      id="event-date"
+      type="date"
+      required
+    >
+  </label>
+
+  <label>
+    Start Time (optional)
+    <input
+      id="event-start"
+      type="time"
+    >
+  </label>
+
+  <label>
+    End Date (optional)
+    <input
+      id="event-end-date"
+      type="date"
+    >
+  </label>
+
+  <label>
+    End Time (optional)
+    <input
+      id="event-end"
+      type="time"
+    >
+  </label>
+
+</div>
+
+<p class="event-date-help">
+  Leave the end date blank for a single-day event.
+  Multi-day events remain publicly visible until
+  their ending date and time. If no ending time
+  is provided, the event expires at midnight
+  Central Time following its ending date.
+</p>
+
+<label>
+  Location (optional)
+
+  <input
+    id="event-location"
+    maxlength="200"
+    placeholder="Main Sanctuary"
+  >
+
+</label>
+
               <label>Event description <textarea id="event-description" rows="4" maxlength="2400" placeholder="What should visitors know about this gathering?"></textarea></label>
               
 <!-- EVENT FLYER UPLOAD -->

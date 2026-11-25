@@ -14,7 +14,6 @@
   const TIMEZONE = 'America/Chicago';
   const AUTOPLAY_MS = 6000;
   const REFRESH_MS = 60000;
-  const LOOKAHEAD_YEARS = 5;
 
   const track = document.getElementById('blc-carousel-track');
   const controls = document.getElementById('blc-carousel-controls');

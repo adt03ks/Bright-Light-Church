@@ -441,3 +441,112 @@ img {
   }
 }
 
+/* =========================================
+   BRIGHT LIGHT CHURCH - SOCIAL MEDIA FOOTER
+   ========================================= */
+
+.footer-social-section {
+  min-width: 0;
+}
+
+.blc-social-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.site-footer .blc-social-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 43px;
+  height: 43px;
+  border: 1px solid #d7b47b;
+  border-radius: 50%;
+  color: #d7b47b;
+  background: transparent;
+  text-decoration: none;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.blc-social-links a svg {
+  width: 21px;
+  height: 21px;
+  display: block;
+}
+
+/* YouTube play button */
+
+.blc-youtube-play {
+  fill: #07131d;
+  transition: fill 0.25s ease;
+}
+
+/* Gold hover effect */
+
+.site-footer .blc-social-links a:hover {
+  background: #d7b47b;
+  color: #0c1b2a;
+  transform: translateY(-4px);
+  box-shadow: 0 5px 18px rgba(215, 180, 123, 0.25);
+}
+
+.blc-social-links a:hover .blc-youtube-play {
+  fill: #d7b47b;
+}
+
+/* Keyboard accessibility */
+
+.blc-social-links a:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 4px;
+}
+
+/* Social media tagline */
+
+.site-footer .blc-social-tagline {
+  color: #d7b47b;
+  font-size: 11px;
+  line-height: 1.7;
+  margin: 12px 0 0;
+  letter-spacing: 0.25px;
+}
+
+/* Mobile responsiveness */
+
+@media (max-width: 590px) {
+
+  .blc-social-links {
+    gap: 8px;
+  }
+
+  .site-footer .blc-social-links a {
+    width: 38px;
+    height: 38px;
+  }
+
+  .blc-social-links a svg {
+    width: 18px;
+    height: 18px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .site-footer .blc-social-links a {
+    transition: none;
+  }
+
+  .site-footer .blc-social-links a:hover {
+    transform: none;
+  }
+
+}
+

@@ -66,8 +66,114 @@
                 <label>Location (optional) <input id="event-location" maxlength="200" placeholder="Main Sanctuary"></label>
               </div>
               <label>Event description <textarea id="event-description" rows="4" maxlength="2400" placeholder="What should visitors know about this gathering?"></textarea></label>
+              
+<!-- EVENT FLYER UPLOAD -->
+
+<div class="event-flyer-section">
+
+  <div class="flyer-section-heading">
+    <span class="section-label">
+      EVENT PROMOTIONAL IMAGE
+    </span>
+
+    <h3>Event Flyer</h3>
+
+    <p>
+      Upload a promotional image to display on the
+      church homepage and public event calendar.
+    </p>
+  </div>
+
+  <input type="hidden" id="event-flyer-url">
+
+  <div class="flyer-upload-box">
+
+    <label for="event-flyer" class="flyer-upload-label">
+
+      <span class="flyer-upload-icon">⬆</span>
+
+      <strong>Choose Event Image</strong>
+
+      <small>
+        JPG, PNG, WebP or GIF · Maximum 5 MB
+      </small>
+
+    </label>
+
+    <input
+      id="event-flyer"
+      type="file"
+      accept="image/jpeg,image/png,image/webp,image/gif"
+    >
+
+  </div>
+
+  <div id="event-flyer-preview-wrap"
+       class="flyer-preview-wrap"
+       hidden>
+
+    <img id="event-flyer-preview"
+         class="flyer-preview-image"
+         alt="Event flyer preview">
+
+    <div class="flyer-preview-actions">
+
+      <button
+        class="btn secondary small"
+        type="button"
+        id="replace-event-flyer">
+        Replace Image
+      </button>
+
+      <button
+        class="btn secondary small flyer-remove-button"
+        type="button"
+        id="remove-event-flyer">
+        Remove Image
+      </button>
+
+    </div>
+
+  </div>
+
+  <p id="event-flyer-status"
+     class="flyer-status"
+     aria-live="polite">
+    No promotional image selected.
+  </p>
+
+  <small class="flyer-help">
+    Images are optional. Only upload promotional
+    materials intended for public viewing.
+    Landscape images with a 16:9 aspect ratio
+    are recommended.
+  </small>
+
+</div>
+
+<!-- END EVENT FLYER UPLOAD -->
+
               <label>Event link (optional, HTTPS only) <input id="event-url" type="url" placeholder="https://brightlightchurch.org/events.html"></label>
-              <label class="checkline"><input id="event-published" type="checkbox"><span><strong>Publish on public Events calendar</strong><small>Leave unchecked to save privately as a draft.</small></span></label>
+              
+<label class="checkline">
+
+  <input id="event-published" type="checkbox">
+
+  <span>
+
+    <strong>Publish Event to Church Website</strong>
+
+    <small>
+      Display this event on the homepage carousel
+      and public Events calendar. Past events
+      automatically expire from public view.
+      Leave unchecked to save as a draft.
+    </small>
+
+  </span>
+
+</label>
+
               <div class="form-actions"><button class="btn primary" type="submit" id="save-event">Save Event</button><button class="btn secondary" type="button" id="clear-event">Clear / New Event</button></div>
             </form>
           </section>

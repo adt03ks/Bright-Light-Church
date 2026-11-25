@@ -92,16 +92,6 @@
     return Number.isNaN(date.getTime()) ? null : date;
   }
 
-  function addYears(value, years) {
-    const date = parseDate(value);
-
-    date.setUTCFullYear(
-      date.getUTCFullYear() + years
-    );
-
-    return date.toISOString().slice(0, 10);
-  }
-
   function formatDate(value) {
     const date = parseDate(value);
 

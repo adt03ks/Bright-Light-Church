@@ -157,18 +157,20 @@
     return true;
   }
 
-  function eventKey(event) {
-    if (event.id != null) {
-      return String(event.id);
-    }
-
-    return JSON.stringify([
-      event.event_date,
-      event.start_time,
-      event.event_title,
-      event.event_location
-    ]);
+  
+function eventKey(event) {
+  if (event.event_id != null) {
+    return String(event.event_id);
   }
+
+  return JSON.stringify([
+    event.event_date,
+    event.start_time,
+    event.event_title,
+    event.event_location
+  ]);
+}
+
 
   function safeUrl(value) {
     if (!value) return null;
@@ -349,20 +351,39 @@
 
     const copy = el('div', 'blc-carousel-copy');
 
-    copy.append(
-      el('div', 'blc-carousel-label', 'Upcoming Church Event'),
+  
+const eventHeading = el('h3');
 
-      el('h3', '', event.event_title || 'Church Event'),
+const titleLink = el(
+  'a',
+  'blc-carousel-title-link',
+  event.event_title || 'Church Event'
+);
 
-      el(
-        'p',
-        'blc-carousel-meta',
-        formatDate(event.event_date) +
-        (event.start_time
-          ? ` · ${formatTime(event.start_time)} CT`
-          : '')
-      )
-    );
+titleLink.href =
+  `events.html?event=${encodeURIComponent(event.event_id)}&date=${encodeURIComponent(event.event_date)}`;
+
+eventHeading.append(titleLink);
+
+copy.append(
+  el(
+    'div',
+    'blc-carousel-label',
+    'Upcoming Church Event'
+  ),
+
+  eventHeading,
+
+  el(
+    'p',
+    'blc-carousel-meta',
+    formatDate(event.event_date) +
+    (event.start_time
+      ? ` · ${formatTime(event.start_time)} CT`
+      : '')
+  )
+);
+
 
     if (event.event_location) {
       copy.append(
@@ -390,8 +411,12 @@
       'View Event Details →'
     );
 
-    detailsLink.href =
-      safeUrl(event.details_url) || 'events.html';
+   
+const eventPageUrl =
+  `events.html?event=${encodeURIComponent(event.event_id)}&date=${encodeURIComponent(event.event_date)}`;
+
+detailsLink.href = eventPageUrl;
+
 
     copy.append(detailsLink);
     slide.append(dateBox, copy);
@@ -415,7 +440,23 @@
         image.remove();
       });
 
-      slide.append(image);
+      
+const imageLink = el(
+  'a',
+  'blc-carousel-flyer-link'
+);
+
+imageLink.href = eventPageUrl;
+
+imageLink.setAttribute(
+  'aria-label',
+  `View details for ${event.event_title}`
+);
+
+imageLink.append(image);
+
+slide.append(imageLink);
+
     }
 
     track.replaceChildren(slide);
@@ -460,15 +501,9 @@
     loading = true;
 
     try {
-      const today = churchNow().date;
-
-      const { data, error } = await db.rpc(
-        'blc_public_calendar_events',
-        {
-          p_start_date: today,
-          p_end_date: addYears(today, LOOKAHEAD_YEARS)
-        }
-      );
+const { data, error } = await db.rpc(
+  'blc_public_upcoming_events'
+);
 
       if (error) throw error;
 

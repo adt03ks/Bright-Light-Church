@@ -600,4 +600,117 @@ img {
   }
 
 }
+/* =========================================
+   PASTORAL LEADERSHIP - WRAPPED BIOGRAPHY
+========================================= */
 
+.leader-feature {
+    display: flow-root !important;
+    width: 100%;
+    margin-top: 35px;
+}
+
+/* Pastoral family photograph */
+
+.leader-feature .leader-photo {
+    float: left;
+    width: 38% !important;
+    max-width: 420px;
+    height: auto;
+    margin: 0 36px 24px 0 !important;
+    overflow: hidden;
+    border-radius: 6px;
+}
+
+/* Photograph sizing */
+
+.leader-feature .leader-photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Allow biography to wrap around photograph */
+
+.leader-feature > div:not(.leader-photo) {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    overflow: visible !important;
+}
+
+/* Pastoral family heading */
+
+.leader-feature h2 {
+    margin-top: 8px;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+/* Biography typography */
+
+.leader-feature p,
+.leader-feature [data-blc-caption] {
+    font-size: 16px;
+    line-height: 1.9;
+    color: #384956;
+    white-space: pre-wrap !important;
+    overflow-wrap: break-word;
+    word-break: normal;
+    text-align: left;
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    -webkit-line-clamp: unset !important;
+    margin-bottom: 20px;
+}
+
+/* Hide internal editorial notes */
+
+.leader-feature .editor-note {
+    display: none !important;
+}
+
+/* Tablet layout */
+
+@media (max-width: 850px) {
+
+    .leader-feature .leader-photo {
+        width: 40% !important;
+        margin: 0 24px 18px 0 !important;
+    }
+
+    .leader-feature p,
+    .leader-feature [data-blc-caption] {
+        font-size: 15px;
+        line-height: 1.85;
+    }
+}
+
+/* Mobile phone layout */
+
+@media (max-width: 600px) {
+
+    .leader-feature .leader-photo {
+        float: none !important;
+        width: 100% !important;
+        max-width: 420px;
+        margin: 0 auto 28px !important;
+    }
+
+    .leader-feature h2 {
+        text-align: center;
+    }
+
+    .leader-feature .eyebrow {
+        text-align: center;
+    }
+
+    .leader-feature p,
+    .leader-feature [data-blc-caption] {
+        font-size: 15px;
+        line-height: 1.85;
+    }
+}

@@ -36,3 +36,20 @@
 #content-form {
   min-width: 0;
 }
+/* Extended caption and biography editor */
+
+#caption {
+  width: 100%;
+  min-height: 320px;
+  max-height: none;
+  resize: vertical;
+  overflow-y: auto;
+  line-height: 1.7;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+#current-caption {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}

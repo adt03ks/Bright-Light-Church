@@ -1,0 +1,1130 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+
+<title>Bright Light Church | Practice Raffle Drawing</title>
+
+<style>
+
+:root {
+    --navy: #091323;
+    --blue: #1c293d;
+    --gold: #e8c47d;
+    --light: #ffffff;
+    --muted: #b7c5d9;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: radial-gradient(
+        ellipse at top,
+        #293f60,
+        #091323 75%
+    );
+    color: var(--light);
+    font-family: system-ui, Arial, sans-serif;
+    min-height: 100vh;
+}
+
+main {
+    max-width: 1100px;
+    margin: auto;
+    padding: 24px;
+    text-align: center;
+}
+
+header {
+    letter-spacing: 4px;
+    color: var(--gold);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+h1, h2 {
+    font-family: Georgia, serif;
+    color: var(--gold);
+    margin: 12px;
+}
+
+h1 {
+    font-size: clamp(28px, 5vw, 48px);
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 15px;
+}
+
+.practice-badge {
+    display: inline-block;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 6px 15px;
+    border-radius: 30px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 18px;
+}
+
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 25px 0;
+}
+
+.stat {
+    background: var(--blue);
+    border: 1px solid #a68b55;
+    border-radius: 12px;
+    padding: 15px 8px;
+    flex: 1;
+    max-width: 240px;
+}
+
+.stat strong {
+    display: block;
+    color: var(--gold);
+    font-size: 30px;
+}
+
+.stat span {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.current-prize {
+    margin: 20px 0;
+}
+
+#nextPrize {
+    letter-spacing: 3px;
+    color: var(--gold);
+    font-size: 12px;
+}
+
+#prizeName {
+    color: white;
+    font-size: 24px;
+    margin-top: 10px;
+}
+
+.drum {
+    position: relative;
+    border: 3px solid #cfa75c;
+    border-radius: 20px;
+    max-width: 800px;
+    margin: 20px auto;
+    background: linear-gradient(
+        #050a12,
+        #283950,
+        #050a12
+    );
+    box-shadow:
+        0 0 35px #d7ad5422,
+        inset 0 0 25px #000;
+    overflow: hidden;
+    padding: 10px 0;
+}
+
+.name {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a8b5ca;
+    font-size: 21px;
+    overflow: hidden;
+    padding: 0 25px;
+}
+
+.name:first-child,
+.name:nth-child(5) {
+    opacity: 0.35;
+}
+
+.selected {
+    height: 85px;
+    border-top: 2px solid var(--gold);
+    border-bottom: 2px solid var(--gold);
+    background: linear-gradient(
+        90deg,
+        #a8894810,
+        #a8894845,
+        #a8894810
+    );
+    color: #fff2cd;
+    font-size: clamp(24px, 5vw, 44px);
+    font-weight: 900;
+    text-shadow: 0 0 15px #d9b26755;
+}
+
+.arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    font-size: 25px;
+}
+
+.arrow-left {
+    left: 8px;
+}
+
+.arrow-right {
+    right: 8px;
+}
+
+.won .selected {
+    background: linear-gradient(
+        90deg,
+        #77551e,
+        #b28b40,
+        #77551e
+    );
+    box-shadow: inset 0 0 30px var(--gold);
+    animation: glow 0.8s alternate 4;
+}
+
+@keyframes glow {
+    to {
+        text-shadow: 0 0 20px white;
+        box-shadow: inset 0 0 45px #ffe2a1;
+    }
+}
+
+button {
+    border: 0;
+    border-radius: 9px;
+    padding: 14px 24px;
+    background: var(--gold);
+    color: #13213a;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:hover:not(:disabled) {
+    filter: brightness(1.12);
+}
+
+button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.spin-button {
+    background: linear-gradient(
+        110deg,
+        #ad8136,
+        #f7d998,
+        #bd9145
+    );
+    font-size: 19px;
+    letter-spacing: 2px;
+    width: min(90%, 500px);
+    padding: 18px;
+}
+
+.secondary {
+    background: #24354d;
+    color: white;
+    border: 1px solid #64748b;
+}
+
+#announcement {
+    min-height: 40px;
+    font-size: 22px;
+    color: var(--gold);
+    font-weight: bold;
+    margin: 20px 0 10px;
+}
+
+.winner-section {
+    border-top: 1px solid #b6965455;
+    margin-top: 30px;
+    padding-top: 20px;
+}
+
+.slot {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    text-align: left;
+    border: 1px solid #536077;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 9px auto;
+    max-width: 950px;
+    background: #ffffff08;
+}
+
+.prize-label {
+    color: var(--gold);
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+}
+
+.prize-title {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.winner {
+    text-align: center;
+    color: var(--gold);
+    font-size: 20px;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.awarded {
+    border-color: var(--gold);
+    background: #c39a4b14;
+}
+
+.confetti {
+    position: fixed;
+    top: -15px;
+    width: 8px;
+    height: 13px;
+    pointer-events: none;
+    z-index: 999;
+    animation: fall 2.8s ease-in forwards;
+}
+
+@keyframes fall {
+    to {
+        transform:
+            translate(var(--dx), 110vh)
+            rotate(750deg);
+        opacity: 0;
+    }
+}
+
+footer {
+    margin-top: 30px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+@media (max-width: 600px) {
+    main {
+        padding: 15px;
+    }
+
+    .stat strong {
+        font-size: 23px;
+    }
+
+    .stat span {
+        font-size: 10px;
+    }
+
+    .slot {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .winner {
+        font-size: 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .confetti {
+        display: none;
+    }
+
+    .won .selected {
+        animation: none;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<main>
+
+    <div class="practice-badge">
+        PRACTICE MODE
+    </div>
+
+    <header>
+        BRIGHT LIGHT CHURCH
+    </header>
+
+    <h1>Annual Fundraiser</h1>
+
+    <h2>LIVE RAFFLE DRAWING</h2>
+
+    <p class="subtitle">
+        November 29, 2026 | Be a Blessing!
+    </p>
+
+    <div class="stats">
+
+        <div class="stat">
+            <strong id="entries">0</strong>
+            <span>Remaining Entries</span>
+        </div>
+
+        <div class="stat">
+            <strong id="donors">0</strong>
+            <span>Eligible Donors</span>
+        </div>
+
+        <div class="stat">
+            <strong id="count">0 / 5</strong>
+            <span>Winners Selected</span>
+        </div>
+
+    </div>
+
+    <div class="current-prize">
+        <div id="nextPrize"></div>
+        <h2 id="prizeName"></h2>
+    </div>
+
+    <div class="drum" id="drum">
+
+        <div class="name"></div>
+
+        <div class="name"></div>
+
+        <div class="name selected">
+            READY TO DRAW
+        </div>
+
+        <div class="name"></div>
+
+        <div class="name"></div>
+
+        <span class="arrow arrow-left">▶</span>
+
+        <span class="arrow arrow-right">◀</span>
+
+    </div>
+
+    <div id="announcement" role="status">
+        Who will be our next blessed winner?
+    </div>
+
+    <button id="spin" class="spin-button">
+        START TUMBLER
+    </button>
+
+    <div>
+        <button id="fullscreen" class="secondary">
+            Full Screen
+        </button>
+
+        <button id="sound" class="secondary">
+            Sound: Off
+        </button>
+    </div>
+
+    <section class="winner-section">
+
+        <h2>Our Five Blessed Winners</h2>
+
+        <p class="subtitle">
+            Five prizes. Five different winners.
+        </p>
+
+        <div id="winnerSlots"></div>
+
+    </section>
+
+    <button id="reset" class="secondary">
+        Reset Practice Drawing
+    </button>
+
+    <footer>
+        Bright Light Church — Anahuac, Texas
+        <br>
+        Practice drawing using fictional contributors.
+        Not connected to the official fundraiser ledger.
+    </footer>
+
+</main>
+
+<script>
+
+"use strict";
+
+/* =====================================
+   PRACTICE DONORS
+===================================== */
+
+const initialDonors = [
+
+    { id: 1, name: "Contributor A", amount: 150 },
+    { id: 2, name: "Contributor B", amount: 250 },
+    { id: 3, name: "Contributor C", amount: 50 },
+    { id: 4, name: "Contributor D", amount: 20 },
+    { id: 5, name: "Contributor E", amount: 80 },
+    { id: 6, name: "Contributor F", amount: 50 }
+
+].map(donor => ({
+
+    ...donor,
+
+    entries: Math.floor(donor.amount / 10)
+
+}));
+
+/* =====================================
+   PRIZE DRAWING ORDER
+===================================== */
+
+const prizes = [
+
+    "65-inch VIZIO 4K QLED TV",
+
+    "Movie Night & Treats Basket",
+
+    "$100 Cactus Jack Gift Card",
+
+    "Black & Gold Air Fryer",
+
+    "Marriott Marquis Houston Staycation"
+
+];
+
+/* =====================================
+   DRAWING STATE
+===================================== */
+
+let donorPool = initialDonors.map(donor => ({
+    ...donor
+}));
+
+let winners = [];
+
+let busy = false;
+
+let soundEnabled = false;
+
+let audioContext = null;
+
+const $ = id => document.getElementById(id);
+
+const nameRows = [
+    ...document.querySelectorAll(".name")
+];
+
+/* =====================================
+   ENTRY CALCULATIONS
+===================================== */
+
+function totalEntries() {
+
+    return donorPool.reduce(
+        (total, donor) => total + donor.entries,
+        0
+    );
+
+}
+
+/* =====================================
+   SECURE RANDOM NUMBER FOR PRACTICE
+===================================== */
+
+function randomInteger(max) {
+
+    if (
+        !Number.isSafeInteger(max) ||
+        max < 1 ||
+        max > 4294967296
+    ) {
+        throw new Error("Invalid entry count.");
+    }
+
+    const values = new Uint32Array(1);
+
+    const range = 4294967296;
+
+    const limit = range - (range % max);
+
+    do {
+
+        crypto.getRandomValues(values);
+
+    } while (values[0] >= limit);
+
+    return values[0] % max;
+
+}
+
+/* =====================================
+   WEIGHTED DONOR SELECTION
+===================================== */
+
+function pickDonor() {
+
+    let target = randomInteger(totalEntries());
+
+    for (const donor of donorPool) {
+
+        if (target < donor.entries) {
+
+            return donor;
+
+        }
+
+        target -= donor.entries;
+
+    }
+
+    throw new Error("No eligible donor found.");
+
+}
+
+/* =====================================
+   SOUND EFFECTS
+===================================== */
+
+function playTone(
+    frequency,
+    duration = 0.05,
+    delay = 0
+) {
+
+    if (!soundEnabled || !audioContext) {
+        return;
+    }
+
+    const oscillator =
+        audioContext.createOscillator();
+
+    const gain =
+        audioContext.createGain();
+
+    const start =
+        audioContext.currentTime + delay;
+
+    oscillator.type = "sine";
+
+    oscillator.frequency.value = frequency;
+
+    gain.gain.setValueAtTime(0.08, start);
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        start + duration
+    );
+
+    oscillator.connect(gain);
+
+    gain.connect(audioContext.destination);
+
+    oscillator.start(start);
+
+    oscillator.stop(start + duration);
+
+}
+
+function celebrationSound() {
+
+    [523, 659, 784, 1047].forEach(
+        (frequency, index) => {
+
+            playTone(
+                frequency,
+                0.3,
+                index * 0.16
+            );
+
+        }
+    );
+
+}
+
+$("sound").addEventListener("click", async () => {
+
+    soundEnabled = !soundEnabled;
+
+    if (soundEnabled) {
+
+        try {
+
+            const AudioClass =
+                window.AudioContext ||
+                window.webkitAudioContext;
+
+            if (!AudioClass) {
+                throw new Error("Audio unavailable");
+            }
+
+            audioContext =
+                audioContext || new AudioClass();
+
+            await audioContext.resume();
+
+            playTone(650, 0.1);
+
+        } catch {
+
+            soundEnabled = false;
+
+        }
+
+    }
+
+    $("sound").textContent =
+        soundEnabled ? "Sound: On" : "Sound: Off";
+
+});
+
+/* =====================================
+   UPDATE WINNER SLOTS
+===================================== */
+
+function renderWinnerSlots() {
+
+    const container = $("winnerSlots");
+
+    container.replaceChildren();
+
+    prizes.forEach((prize, index) => {
+
+        const winner = winners[index];
+
+        const slot = document.createElement("div");
+
+        slot.className =
+            "slot" + (winner ? " awarded" : "");
+
+        const prizeDetails =
+            document.createElement("div");
+
+        const label =
+            document.createElement("div");
+
+        label.className = "prize-label";
+
+        label.textContent =
+            "PRIZE " +
+            String(index + 1).padStart(2, "0");
+
+        const title =
+            document.createElement("div");
+
+        title.className = "prize-title";
+
+        title.textContent = prize;
+
+        prizeDetails.append(label, title);
+
+        const winnerName =
+            document.createElement("div");
+
+        winnerName.className = "winner";
+
+        winnerName.textContent = winner
+            ? "🏆 " + winner.name
+            : "________________";
+
+        slot.append(prizeDetails, winnerName);
+
+        container.appendChild(slot);
+
+    });
+
+}
+
+/* =====================================
+   UPDATE DASHBOARD
+===================================== */
+
+function renderDashboard() {
+
+    $("entries").textContent = totalEntries();
+
+    $("donors").textContent = donorPool.length;
+
+    $("count").textContent =
+        winners.length + " / " + prizes.length;
+
+    const complete =
+        winners.length >= prizes.length;
+
+    $("nextPrize").textContent = complete
+
+        ? "DRAWING COMPLETE"
+
+        : "DRAWING FOR PRIZE " +
+            String(winners.length + 1)
+                .padStart(2, "0");
+
+    $("prizeName").textContent = complete
+
+        ? "Congratulations to all five winners!"
+
+        : prizes[winners.length];
+
+    $("spin").disabled =
+        busy ||
+        complete ||
+        donorPool.length === 0 ||
+        totalEntries() === 0;
+
+    $("reset").disabled = busy;
+
+    if (busy) {
+
+        $("spin").textContent = "TUMBLING...";
+
+    } else if (complete) {
+
+        $("spin").textContent =
+            "ALL PRIZES AWARDED";
+
+    } else if (!donorPool.length) {
+
+        $("spin").textContent =
+            "NO ELIGIBLE DONORS REMAIN";
+
+    } else if (winners.length > 0) {
+
+        $("spin").textContent =
+            "DRAW NEXT WINNER";
+
+    } else {
+
+        $("spin").textContent =
+            "START TUMBLER";
+
+    }
+
+    renderWinnerSlots();
+
+}
+
+/* =====================================
+   CELEBRATION CONFETTI
+===================================== */
+
+function launchConfetti() {
+
+    if (
+        window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches
+    ) {
+        return;
+    }
+
+    const colors = [
+
+        "#e8c47d",
+        "#ffffff",
+        "#638bbd",
+        "#fff4c9",
+        "#a74f63"
+
+    ];
+
+    for (let i = 0; i < 100; i++) {
+
+        const piece =
+            document.createElement("div");
+
+        piece.className = "confetti";
+
+        piece.style.left =
+            Math.random() * 100 + "%";
+
+        piece.style.background =
+            colors[i % colors.length];
+
+        piece.style.animationDelay =
+            Math.random() * 0.5 + "s";
+
+        piece.style.setProperty(
+
+            "--dx",
+
+            Math.random() * 400 - 200 + "px"
+
+        );
+
+        document.body.appendChild(piece);
+
+        setTimeout(() => {
+
+            piece.remove();
+
+        }, 3500);
+
+    }
+
+}
+
+/* =====================================
+   SAVE PRACTICE WINNER
+===================================== */
+
+function finishDrawing(chosen) {
+
+    winners.push({
+
+        id: chosen.id,
+
+        name: chosen.name,
+
+        entries: chosen.entries,
+
+        prize: prizes[winners.length],
+
+        selectedAt: new Date().toISOString()
+
+    });
+
+    /*
+      Remove the winning donor completely,
+      regardless of their remaining entries.
+    */
+
+    donorPool = donorPool.filter(
+
+        donor => donor.id !== chosen.id
+
+    );
+
+    $("drum").classList.add("won");
+
+    $("announcement").textContent =
+        "Congratulations, " + chosen.name + "!";
+
+    launchConfetti();
+
+    celebrationSound();
+
+    busy = false;
+
+    renderDashboard();
+
+}
+
+/* =====================================
+   START THE RAFFLE TUMBLER
+===================================== */
+
+$("spin").addEventListener("click", () => {
+
+    if (
+        busy ||
+        winners.length >= prizes.length ||
+        donorPool.length === 0 ||
+        totalEntries() === 0
+    ) {
+
+        return;
+
+    }
+
+    busy = true;
+
+    renderDashboard();
+
+    $("drum").classList.remove("won");
+
+    $("announcement").textContent =
+        "Selecting our next blessed winner...";
+
+    /*
+      Select the result using weighted entries.
+      The animation reveals the selected result.
+    */
+
+    const chosen = pickDonor();
+
+    const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (reducedMotion) {
+
+        nameRows.forEach((row, index) => {
+
+            row.textContent =
+                index === 2 ? chosen.name : "";
+
+        });
+
+        finishDrawing(chosen);
+
+        return;
+
+    }
+
+    const startTime = performance.now();
+
+    const duration = 6000;
+
+    let rollingNames = Array.from(
+
+        { length: 5 },
+
+        () => pickDonor().name
+
+    );
+
+    function tumble() {
+
+        const elapsed =
+            performance.now() - startTime;
+
+        const progress =
+            Math.min(elapsed / duration, 1);
+
+        rollingNames.shift();
+
+        rollingNames.push(pickDonor().name);
+
+        if (progress >= 1) {
+
+            rollingNames[2] = chosen.name;
+
+        }
+
+        nameRows.forEach((row, index) => {
+
+            row.textContent = rollingNames[index];
+
+        });
+
+        if (progress < 1) {
+
+            playTone(
+                380 + (1 - progress) * 250,
+                0.035
+            );
+
+            /*
+              Begin quickly, then gradually
+              slow down toward the winning name.
+            */
+
+            const delay =
+                35 + Math.pow(progress, 4) * 420;
+
+            setTimeout(tumble, delay);
+
+            return;
+
+        }
+
+        finishDrawing(chosen);
+
+    }
+
+    tumble();
+
+});
+
+/* =====================================
+   FULL SCREEN PRESENTATION
+===================================== */
+
+$("fullscreen").addEventListener(
+    "click",
+    async () => {
+
+        try {
+
+            if (document.fullscreenElement) {
+
+                await document.exitFullscreen();
+
+            } else {
+
+                await document.documentElement
+                    .requestFullscreen();
+
+            }
+
+        } catch {
+
+            $("announcement").textContent =
+                "Full screen is unavailable " +
+                "in this browser.";
+
+        }
+
+    }
+);
+
+document.addEventListener(
+    "fullscreenchange",
+    () => {
+
+        $("fullscreen").textContent =
+            document.fullscreenElement
+                ? "Exit Full Screen"
+                : "Full Screen";
+
+    }
+);
+
+/* =====================================
+   RESET PRACTICE DRAWING
+===================================== */
+
+$("reset").addEventListener("click", () => {
+
+    if (busy) {
+        return;
+    }
+
+    if (!confirm("Reset the practice drawing?")) {
+        return;
+    }
+
+    donorPool = initialDonors.map(donor => ({
+        ...donor
+    }));
+
+    winners = [];
+
+    nameRows.forEach((row, index) => {
+
+        row.textContent =
+            index === 2 ? "READY TO DRAW" : "";
+
+    });
+
+    $("drum").classList.remove("won");
+
+    $("announcement").textContent =
+        "Who will be our next blessed winner?";
+
+    renderDashboard();
+
+});
+
+/* =====================================
+   INITIALIZE PAGE
+===================================== */
+
+renderDashboard();
+
+</script>
+
+</body>
+</html>
